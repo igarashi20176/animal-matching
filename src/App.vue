@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-[#fafafa] p-4 text-center">
+  <header class="bg-[#f9fafb] p-4 text-center">
     <h2 class="font-bold">あにまるちゃーと</h2>
   </header>
   <div class="w-2/5 min-w-[500px] m-auto box-border mt-10 mb-8 p-2 rounded-3xl flex justify-center text-center bg-[#fafafa]">
@@ -19,7 +19,7 @@
       </button>
     </router-link>
   </div>
-  <div class="scroll h-[450px] w-[800px] overflow-auto rounded-2xl m-auto p-2 bg-[#fafafa]">
+  <div class="scroll h-[450px] w-[800px] overflow-auto rounded-2xl m-auto p-2 bg-[#f9fafb]">
     <router-view />
   </div>
   <footer class=" mt-10 text-center p-3 bg-[#fef9c3]">
