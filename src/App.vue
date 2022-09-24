@@ -1,6 +1,6 @@
 <template>
   <header class="bg-[#fafafa] p-4 text-center">
-    <h2>タイトル</h2>
+    <h2 class="font-bold">あにまるちゃーと</h2>
   </header>
   <div class="w-2/5 min-w-[500px] m-auto box-border mt-10 mb-8 p-2 rounded-3xl flex justify-center text-center bg-[#fafafa]">
     <router-link to="/chart">
