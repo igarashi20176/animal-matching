@@ -1,6 +1,6 @@
 <template>
   <ul v-for="(list, idx) in lists">
-    <a class="block cursor-pointer">
+    <a class="block cursor-pointer" @click.prevent="showDetailItem(list)">
       <li :key="list.id">
         <div class="relative m-6 p-2 border-2 border-gray-400 rounded-3xl bg-gray-300 hover:shadow-[0_0_8px_3px_rgba(0,0,0,0.4)]">
           <img 
@@ -43,5 +43,10 @@
 
   const clickFav = id => {
     store.commit('toggleFav', id)
+  }
+
+  const showDetailItem = list => {
+    router.push({ name: 'detail', params: { list: "aiueo" } })
+    // console.log(list);
   }
 </script>

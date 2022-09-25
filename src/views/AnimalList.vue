@@ -15,7 +15,6 @@
   import { computed } from "vue"
   import { useRoute } from "vue-router"
   import { useStore } from "vuex"
-  import { onMounted } from "vue";
   import ListItem from "../components/ListItem.vue";
   
   const route = useRoute()
