@@ -17,12 +17,12 @@
             <p class="text-xl font-bold">個性: {{ list.chara }}</p>
           </div>        
           <button v-if="list.isFav"
-            @click="clickFav(list.id)"
+            @click.stop="clickFav(list.id)"
             class="absolute top-[40%] right-[12%] text-[4em] text-red-500 ">
             &hearts;
           </button>
           <button v-else
-            @click="clickFav(list.id)"
+            @click.stop="clickFav(list.id)"
             class="absolute top-[40%] right-[12%] text-[4em] text-red-500">
             &#9825;
           </button>

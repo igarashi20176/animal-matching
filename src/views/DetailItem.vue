@@ -3,7 +3,7 @@
     <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
     <figure class="flex">
       <img 
-        class="w-[35%] h-auto rounded-xl border-4"
+        class="w-[250px] h-[350px] rounded-xl border-4"
         :src="`/src/assets/images/${list.img}.jpg`" :alt="list.name">
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">
