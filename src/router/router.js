@@ -15,7 +15,7 @@ const routes = [
         component: Animal
     },
     {
-        path: '/detail/:list',
+        path: '/detail/:id',
         name: 'detail',
         component: DetailItem
     },
