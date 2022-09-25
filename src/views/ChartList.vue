@@ -17,8 +17,8 @@
 			</button>
 		</div>
 		<button 
-			class="border-2 p-2 rounded-lg border-black "
-			v-show="checkSum"
+			class="border-2 p-2 rounded-lg border-black text-center"
+			v-if="checkSum"
 			@click="checkAnswer">
 			あなたと相性の良い動物は?
 		</button>

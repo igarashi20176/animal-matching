@@ -22,7 +22,7 @@
   
   const lists = computed( () => {
     if ( route.params.filter ) {
-      return store.getters.getAnimalByFav(1)
+      return store.getters.getAnimalByFav
     } else {
       return store.getters.getAll
     }

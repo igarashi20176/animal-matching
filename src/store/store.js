@@ -66,8 +66,11 @@ const getters = {
         return state.animals
     },
     getAnimalByFav( state ) {
-        return isFav => {
-            return state.animals.filter( animal => animal.isFav === true )
+        return state.animals.filter( animal => animal.isFav === true )
+    },
+    getAnimalById( state ) {
+        return id => {
+            return state.animals.find( animal => animal.id === id )
         }
     }
 }

@@ -10,8 +10,8 @@ const routes = [
         component: Chart,
     },
     {
-        path: '/animal/:filter?',
-        name: 'animal',
+        path: '/list/:filter?',
+        name: 'list',
         component: Animal
     },
     {
@@ -26,7 +26,7 @@ const routes = [
     // },
     {
         path: '/*',
-        redirect: '/animal'
+        redirect: '/list'
     }
 ]
 

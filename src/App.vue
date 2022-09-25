@@ -8,12 +8,12 @@
         診断
       </button>
     </router-link>
-    <router-link :to="{ name: 'animal', params: { filter: true } }">
+    <router-link :to="{ name: 'list', params: { filter: true } }">
       <button class="w-[100px] border-2 rounded-md p-1 mx-1  active:bg-red-400">
         お気に入り
       </button>
     </router-link>
-    <router-link to="/animal">
+    <router-link to="/list">
       <button class="w-[100px] border-2 rounded-md p-1 mx-1  active:bg-red-400">
         一覧
       </button>
