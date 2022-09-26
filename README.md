@@ -11,11 +11,12 @@ My first vue creation / 2022/09/25
 飼い主には, もっとペットを飼うためのモラルや飼えるかどうかの自覚ができる指標が必要だと考える。
 
 ### ○各View, Componentの概要
-以下のサイトを参考に, 機能的なアプリを作るよう心掛けました。
-https://aloerina01.github.io/blog/2018-05-01-1  
-~【Vue】単一ファイルコンポーネントの命名規則まとめ【ファイル名から記法まで】
-https://zenn.dev/offers/articles/20220523-component-design-best-practice  
-~【React/Vue.js】コンポーネント設計の（個人的）ベストプラクティス
+以下のサイトを参考に, 機能的なアプリを作るよう心掛けました。  
+
+【Vue】単一ファイルコンポーネントの命名規則まとめ【ファイル名から記法まで】  
+https://qiita.com/ngron/items/ab2a17ae483c95a2f15e  
+【React/Vue.js】コンポーネント設計の（個人的）ベストプラクティス  
+https://zenn.dev/offers/articles/20220523-component-design-best-practice   
 
 #### ・App.vue
 アプリの基本となる画面の構成を担います。一連の画面遷移による画面描写はApp.vue上で行われます。
