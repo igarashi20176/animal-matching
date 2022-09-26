@@ -8,14 +8,14 @@
     一覧
   </h2>
   <p class="text-right m-5">フィルター機能</p>
-  <ListItem :lists="lists" />
+  <AnimalListItem :lists="lists" />
 </template>
 
 <script setup>
   import { computed } from "vue"
   import { useRoute } from "vue-router"
   import { useStore } from "vuex"
-  import ListItem from "../components/ListItem.vue";
+  import AnimalListItem from "../components/AnimalListItem.vue";
   
   const route = useRoute()
   const store = useStore()

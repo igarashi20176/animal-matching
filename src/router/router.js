@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Chart from '../views/ChartList.vue'
 import Animal from "../views/AnimalList.vue";
-import DetailItem from "../views/DetailItem.vue";
+import Detail from "../views/AnimalListDetail.vue";
 
 const routes = [
     {
