@@ -8,7 +8,7 @@
     一覧
   </h2>
   <p class="text-right m-5">フィルター機能</p>
-  <AnimalListItem :lists="lists" />
+  <AnimalListItem :lists="lists"  />
 </template>
 
 <script setup>
