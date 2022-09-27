@@ -2,10 +2,13 @@
   <the-header>
     <h2 class="font-bold text-xl">あにまるちゃーと</h2>
   </the-header>
+
   <the-routing-btn-col3 :btn-a="btnA" :btn-b="btnB" :btn-c="btnC" />
+
   <div class="scroll h-[450px] w-[800px] overflow-auto border-2 rounded-2xl m-auto p-2 bg-[#f9fafb]">
     <router-view />
   </div>
+
   <the-footer>
     <h2 class="text-center">@copyright.inc</h2>
   </the-footer>

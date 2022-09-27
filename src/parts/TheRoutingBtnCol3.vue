@@ -22,8 +22,8 @@
   import { defineProps } from "vue";
 
   defineProps({
-    btnA: Object,
-    btnB: Object,
-    btnC: Object
+    btnA: { type: Object, default: { key: "タグ1", path: "/" } },
+    btnB: { type: Object, default: { key: "タグ2", path: "/" } },
+    btnC: { type: Object, default: { key: "タグ3", path: "/" } }
   })
 </script>
