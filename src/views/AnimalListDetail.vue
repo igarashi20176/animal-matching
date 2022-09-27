@@ -1,6 +1,6 @@
 <template>
-  <div class="relative p-3 bg-[#d6d3d1]">
-    <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
+  <div class="relative p-3 rounded-2xl bg-[#d6d3d1]">
+    <p class="my-2 font-bold text-3xl text-center">{{ list.name }}</p>
     <figure class="flex">
       <img 
         class="w-[250px] h-[350px] rounded-xl border-4"

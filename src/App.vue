@@ -1,7 +1,5 @@
 <template>
-  <the-header>
-    <h2 class="font-bold text-xl">あにまるちゃーと</h2>
-  </the-header>
+  <the-header :title="title" />
 
   <the-routing-btn-col3 :btn-a="btnA" :btn-b="btnB" :btn-c="btnC" />
 
@@ -18,6 +16,8 @@
 import TheHeader from './parts/TheHeader.vue';
 import TheFooter from './parts/TheFooter.vue';
 import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
+
+const title = "あにまるちゃーと"
 
 const btnA = {
   key: "診断",
