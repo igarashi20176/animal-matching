@@ -2,7 +2,6 @@
 	<div class="w-3/4  min-w-[600px] m-auto p-2 bg-[#fafafa]">
 		<h2 class="text-3xl text-center mb-3">診断チャート</h2>
 		<p v-if="!checkSum" class="text-center mb-1 border-b-2 border-gray-400">※全て回答してね</p>
-		<ChartListItem />
 		<button 
 			class="border-2 p-2 rounded-lg border-black text-center"
 			v-if="checkSum"
