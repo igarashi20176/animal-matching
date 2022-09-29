@@ -1,9 +1,14 @@
 <template>
+<<<<<<< HEAD:src/views/AnimalListDetail.vue
   <div class="relative p-3 rounded-2xl bg-[#d6d3d1]">
     <p class="my-2 font-bold text-3xl text-center">{{ list.name }}</p>
+=======
+  <div class="relative p-3 bg-gray-200 rounded-2xl border-2 border-gray-400">
+    <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
+>>>>>>> 5474ccfe80450524a2ab9f150652682d16fa12ed:src/templates/AnimalListDetail.vue
     <figure class="flex">
       <img 
-        class="w-[250px] h-[350px] rounded-xl border-4"
+        class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 
         :src="`/src/assets/images/${list.img}.jpg`" :alt="list.name">
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">
@@ -12,12 +17,12 @@
             <span class="text-red-500" v-else>♀</span>
             {{ list.gender }} {{ list.age }}歳 <span v-if="list.week">{{ list.week }}週</span>
           </p>
-          <p class="mb-10">
-            性格: {{ list.chara }}
+          <p class="mb-10 ">
+            性格: {{ list.chara.join(", ") }}
           </p>
           <p>詳細</p>
         </div>
-        <p class="mt-2 p-2 rounded-lg bg-white">{{ list.remarks }}</p>
+        <p class="mt-2 p-2 rounded-lg bg-white border-2 border-gray-400">{{ list.remarks }}</p>
       </figcaption>
     </figure>
     <router-link to="/list">
@@ -35,4 +40,6 @@
   const store = useStore()
 
   const list = store.getters.getAnimalById(Number(route.params.id))
+
+
 </script>
