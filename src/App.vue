@@ -27,14 +27,15 @@ const btnA = {
 }
 
 const btnB = {
-  tag: "お気に入り",
-  path: { name: 'list', params: { filter: true } }
-}
-
-const btnC = {
   tag: "一覧",
   path: "/list"
 }
+
+const btnC = {
+  tag: "追加",
+  path: "/add"
+}
+
 
 </script>
 
