@@ -28,7 +28,6 @@
 
 <script setup>
   import { useRoute } from "vue-router";
-  import { computed } from "vue";
   import { useStore } from "vuex";
 
   const route = useRoute()

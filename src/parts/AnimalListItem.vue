@@ -11,7 +11,7 @@
             @click.stop="clickFav(list.id)"
             class="text-[40px] text-red-500 translate-y-1">
             &hearts;
-           </button>
+          </button>
           <button v-else
             @click.stop="clickFav(list.id)"
             class="text-[40px] text-red-500 translate-y-1">
