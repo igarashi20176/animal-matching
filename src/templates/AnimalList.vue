@@ -9,9 +9,9 @@
   </h2>
   <p class="text-right m-5">フィルター機能</p>
 
-  <ul v-for="(list, idx) in lists">
+  <ul v-for="list in lists">
     <li :key="list.id">
-      <AnimalListItem :list="list"  />
+      <AnimalListItem :list="list" />
     </li>
   </ul>
 </template>
