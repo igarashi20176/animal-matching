@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-10">
+    <div class="bg-gray-200 p-5 rounded-2xl">
       <p class="text-xl">あなたの飼い主適正度は...</p>
       <p class="font-bold text-center text-[50px] text-indigo-500 underline">C</p>
     </div>  

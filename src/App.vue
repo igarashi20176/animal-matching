@@ -22,17 +22,17 @@ import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
 const title = "あにまるちゃーと"
 
 const btnA = {
-  key: "診断",
+  tag: "診断",
   path: "/chart"
 }
 
 const btnB = {
-  key: "お気に入り",
+  tag: "お気に入り",
   path: { name: 'list', params: { filter: true } }
 }
 
 const btnC = {
-  key: "一覧",
+  tag: "一覧",
   path: "/list"
 }
 

@@ -32,7 +32,7 @@ const state = {
         },
         {
             id: 3,
-            isCat: true,
+            isCat: false,
             name: 'ハナ',
             gender: "メス",
             age: 3,
@@ -45,7 +45,7 @@ const state = {
         },
         {
             id: 4,
-            isCat: true,
+            isCat: false,
             name: 'タマ',
             gender: "メス",
             age: 3,
