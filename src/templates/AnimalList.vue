@@ -8,16 +8,10 @@
     一覧
   </h2>
   <p class="text-right m-5">フィルター機能</p>
-<<<<<<< HEAD:src/templates/AnimalList.vue
 
   <ul v-for="list in lists">
     <li :key="list.id">
       <AnimalListItem :list="list" />
-=======
-  <ul v-for="list in lists">
-    <li>
-      <AnimalListItem :list="list"  />
->>>>>>> 5474ccfe80450524a2ab9f150652682d16fa12ed:src/views/AnimalList.vue
     </li>
   </ul>
 </template>

@@ -1,11 +1,6 @@
 <template>
-<<<<<<< HEAD:src/views/AnimalListDetail.vue
-  <div class="relative p-3 rounded-2xl bg-[#d6d3d1]">
-    <p class="my-2 font-bold text-3xl text-center">{{ list.name }}</p>
-=======
   <div class="relative p-3 bg-gray-200 rounded-2xl border-2 border-gray-400">
     <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
->>>>>>> 5474ccfe80450524a2ab9f150652682d16fa12ed:src/templates/AnimalListDetail.vue
     <figure class="flex">
       <img 
         class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 

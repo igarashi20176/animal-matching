@@ -4,7 +4,7 @@
       <img 
         class="w-[100px] h-auto border-2 border-gray-400 rounded-[9999px] ml-12"
         :src="`/src/assets/images/${list.img}.jpg`" :alt="list.img">
-      <div class="absolute top-4 left-1/4"> 
+      <div class="absolute top-4"> 
         <p class="text-3xl font-bold mb-3">
           {{ list.name }}
           <button v-if="list.isFav"
