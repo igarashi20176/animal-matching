@@ -3,6 +3,8 @@
 
   <the-routing-btn-col3 :btn-a="btnA" :btn-b="btnB" :btn-c="btnC" />
 
+  <!-- <p class="absolute top-[52%] right-[15%] custom-text">スクロ―ルできるよ →</p> -->
+
   <div class="scroll h-[450px] w-[800px] overflow-auto border-2 rounded-2xl m-auto p-2 bg-[#f9fafb]">
     <router-view />
   </div>
@@ -39,5 +41,10 @@ const btnC = {
 <style scoped>
   .scroll::-webkit-scrollbar{
     display: none;
+  }
+  .custom-text {
+    writing-mode: vertical-lr;
+    font-size: 20px;
+    font-weight: bold;
   }
 </style>

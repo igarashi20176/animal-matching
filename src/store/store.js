@@ -7,7 +7,7 @@ const state = {
         {
             id: 1,
             isCat: true,
-            name: 'スコティッシュフォールド',
+            name: '猫吉',
             gender: 'オス',
             age: 1,
             week: 5,
@@ -20,7 +20,7 @@ const state = {
         {
             id: 2,
             isCat: true,
-            name: 'マンチカン',
+            name: 'サクラ',
             gender: "メス",
             age: 3,
             week: 2,
@@ -39,7 +39,7 @@ const state = {
             week: 2,
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
             isFav: true,
-            img: 'munchkin',
+            img: 'pomeranian',
             remarks: '大きくてまんまるの目や頭とふっくらとしたマズルが特徴。ずんぐりむっくりな体型も相まって非常にチャーミング!',
             isHere: true
         },
@@ -52,7 +52,7 @@ const state = {
             week: 2,
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
             isFav: false,
-            img: 'munchkin',
+            img: 'akita',
             remarks: '大きくてまんまるの目や頭とふっくらとしたマズルが特徴。ずんぐりむっくりな体型も相まって非常にチャーミング!',
             isHere: true
         }
