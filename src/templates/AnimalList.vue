@@ -1,10 +1,10 @@
 <template>
   <h2 v-if="route.params.filter"
-    class="font-bold text-center text-2xl width-[2px] py-3 border-b-2 border-gray-400">
+    class="font-bold text-center text-3xl width-[2px] py-3 border-b-2 border-gray-400">
     お気に入り
   </h2>
   <h2 v-else
-    class="font-bold text-center text-2xl width-[2px] py-3 border-b-2 border-gray-400">
+    class="font-bold text-center text-3xl width-[2px] py-3 border-b-2 border-gray-400">
     一覧
   </h2>
   <p class="text-right m-5">フィルター機能</p>

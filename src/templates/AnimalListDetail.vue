@@ -1,5 +1,5 @@
 <template>
-  <div class="relative p-3 bg-[#d6d3d1]">
+  <div class="relative p-3 bg-[#d6d3d1] rounded-2xl">
     <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
     <figure class="flex">
       <img 

@@ -57,6 +57,7 @@ const state = {
             isHere: true
         }
     ],
+    rank: "",
 }
 const getters = {
     getCount( state ) {
@@ -84,8 +85,13 @@ const mutations = {
     toggleFav( state, id ) {
         let b = state.animals.find( animal => animal.id === id )
         b.isFav = !b.isFav
+    },
+    // お気に入りを着け外しする
+    saveRank( state, rank ) {
+        state.rank = rank
     }
 }
+
 const actions = {
     toggleFav( { commit }, id ) {
         commit('toggleFav', id)
