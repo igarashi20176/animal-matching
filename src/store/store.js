@@ -33,13 +33,13 @@ const state = {
         {
             id: 3,
             isCat: false,
-            name: 'ハナ',
-            gender: "メス",
+            name: 'コリー',
+            gender: "オス",
             age: 3,
             week: 2,
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
             isFav: true,
-            img: 'pomeranian',
+            img: 'inu',
             remarks: '大きくてまんまるの目や頭とふっくらとしたマズルが特徴。ずんぐりむっくりな体型も相まって非常にチャーミング!',
             isHere: true
         },
@@ -52,7 +52,7 @@ const state = {
             week: 2,
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
             isFav: false,
-            img: 'akita',
+            img: 'shiba',
             remarks: '大きくてまんまるの目や頭とふっくらとしたマズルが特徴。ずんぐりむっくりな体型も相まって非常にチャーミング!',
             isHere: true
         }
@@ -103,8 +103,4 @@ export default createStore({
     getters,
     mutations,
     actions,
-    plugins: [createPersistedState({
-        key: 'animalchart',
-        storage: localStorage
-    })]
 })
