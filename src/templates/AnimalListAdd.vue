@@ -1,3 +1,3 @@
 <template>
-  <div>追加フォームです</div>
+  <div></div>
 </template>

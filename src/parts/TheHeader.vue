@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-[#f9fafb] p-4 text-center">
+  <header class="bg-[#f9fafb] p-4 text-center shadow-md">
     <h2 class="font-bold text-xl">{{ title }}</h2>
   </header>
 </template>
