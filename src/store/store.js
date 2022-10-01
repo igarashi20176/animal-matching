@@ -6,9 +6,9 @@ const state = {
     animals: [
         {
             id: 1,
-            isCat: true,
+            species: "cat",
             name: '猫吉',
-            gender: 'オス',
+            gender: 'male',
             age: 1,
             place: '中部',
             chara: ['穏やか', '一人が好き', '慎重'],
@@ -19,9 +19,9 @@ const state = {
         },
         {
             id: 2,
-            isCat: true,
+            species: "cat",
             name: 'サクラ',
-            gender: "メス",
+            gender: "female",
             age: 3,
             place: '関東',
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
@@ -32,9 +32,9 @@ const state = {
         },
         {
             id: 3,
-            isCat: false,
+            species: "dog",
             name: 'コリー',
-            gender: "オス",
+            gender: "male",
             age: 3,
             place: '近畿',
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
@@ -45,9 +45,9 @@ const state = {
         },
         {
             id: 4,
-            isCat: false,
+            species: "dog",
             name: 'タマ',
-            gender: "メス",
+            gender: "female",
             age: 3,
             place: '九州',
             chara: ['活発', '好奇心旺盛', '甘えん坊'],
