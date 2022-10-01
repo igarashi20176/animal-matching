@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[80%] border-2 border-solid m-auto bg-gray-200 py-3">
+  <div class="w-[80%] border-2 border-solid m-auto bg-gray-200 py-3 rounded-xl">
     <div class="text-center mb-7">
       <label for="namelabel" class="block mb-2">名前</label>
       <input class="p-2 rounded-md w-[50%] h-10" type="text" v-model="name" id="namelabel" placeholder="例）タマ">
