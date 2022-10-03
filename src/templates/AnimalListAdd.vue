@@ -28,7 +28,7 @@
       </div>
       <div>
         <label for="weeklabel" class="block p-1 mb-2">飼育地域</label>
-        <select class="p-2 rounded-md h-10 mr-5" type="number" list="age" v-model="age" id="agelabel" placeholder="" min="0">
+        <select class="p-2 rounded-md h-10 mr-5" type="number" list="age" v-model="place" id="agelabel" placeholder="" min="0">
           <option value="北海道">北海道</option>
           <option value="東北">東北</option>
           <option value="関東">関東</option>
@@ -41,8 +41,8 @@
       </div>
     </div>
     <div class="text-center mb-4">
-      <label for="ikenlabel" class="block mb-2">ご意見</label>
-      <textarea  class="p-2 rounded-md w-[50%]" id="iken" v-model="text" rows="4" max="40" placeholder="活発で甘えん坊だけどお利口さん！"></textarea>
+      <label for="textlabel" class="block mb-2">詳細</label>
+      <textarea  class="p-2 rounded-md w-[50%]" id="textlabel" v-model="text" rows="4" max="40" placeholder="例) 活発で甘えん坊だけどお利口さん！"></textarea>
     </div>
     <div class="text-center mb-7">
       <label for="charalabel" class="block mb-2">性格</label>
@@ -59,6 +59,6 @@
 
   let name = ref("")
   let age = ref("")
-  let week = ref("")
+  let place = ref("")
   let text = ref("")
 </script>

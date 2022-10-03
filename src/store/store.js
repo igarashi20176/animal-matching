@@ -78,8 +78,25 @@ const getters = {
 
 const mutations = {
     // メモを保存する
-    saveAnimal ( state, id ) {
-
+    saveAnimal ( state, newAnimal ) {
+        if ( newAnimal.id ) {
+            let b = state.animals.find( animal => animal.id === newAnimal.id )
+            b.name = newAnimal.animal
+            b.age = newAnimal.age
+            b.chara = newAnimal.chara
+            b.place = newAnimal.place
+            b.remarks = newAnimal.remarks
+        } else {
+            newAnimal.id = ++state.count
+            newAnimal.goods = 0
+            // 時間設定
+            let d = new Date()
+            let year = d.getFullYear() 
+            let month = d.getMonth()
+            let day = d.getDate()
+            newAnimal.publish =  `${year}年 ${month}月 ${day}日`
+            state.memos.unshift(newAnimal)
+        }
     },
     // お気に入りを着け外しする
     toggleFav( state, id ) {
