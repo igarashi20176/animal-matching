@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-  import { defineProps, ref } from "vue";
+  import { ref } from "vue";
 
   defineProps({
     btnA: { type: Object, default: { tag: "タグ1", path: "/" } },

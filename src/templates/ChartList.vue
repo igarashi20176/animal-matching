@@ -73,9 +73,24 @@
 	let chartNum = ref(0)
 	let isEnd = ref(false)
 
+	// 性格診断マッチングでのアニマルリストのフィルター
+	const array_equal = a => {
+		animalLists.filter(animal => {
+			if (!Array.isArray(a)) return false
+			if (!Array.isArray(b)) return false
+			if (a.length != b.length) return false
+			for (var i = 0, n = a.length; i < n; ++i) {
+				if (a[i] !== b[i]) return false
+			}
+			return true
+		})
+	}
+
 	const sendChart = computed( () => charts[chartNum.value] )
 
-	// 問題を進める & 問題を全て解き終わったらcomponentを非表示
+	/**
+	 * 問題を進める & 問題を全て解き終わったらchart-list-itemを非表示
+	 */
 	const countNum = () => {
 		if ( chartNum.value < charts.length - 1 ) {
 			++chartNum.value
@@ -84,21 +99,27 @@
 		}
 	}
 
+	/**
+	 * スコアを加算
+	 */
 	const countScore = choice => {
 			choice = choice + "_score"
 			score.value += charts[chartNum.value][choice]
 			countNum()
 	}
 	
-	// setup記法だとcomponentを文字列でローカルに保存しないため
-	// 変数としてcomponentを返す
+	
+	/**
+	 * 診断結果に応じて結果コンポーネントを表示
+	 */
 	const currentComponent = computed( () => {
 		if( score.value <= 42 && score.value >= 30 ){
-				return TheResultA
+				return TheResultA // setup記法だとcomponentを文字列でローカルに保存しないため, 変数としてcomponentを返す
 			} else if ( score.value < 30 && score.value >= 21 ) {
 				return TheResultB
 			} else {
 				return TheResultC
 			}
 	} )
+
 </script>

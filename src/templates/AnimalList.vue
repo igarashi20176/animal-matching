@@ -33,6 +33,7 @@
   const store = useStore()
   let isFilter = ref(false)
 
+  // 動物のリストをすべて取得
   const lists = computed( () => store.getters.getAll )
 
 

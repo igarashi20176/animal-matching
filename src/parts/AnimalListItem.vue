@@ -8,7 +8,7 @@
         <div> 
           <p class="my-1 text-3xl font-bold">
             {{ list.name }}
-          <TheFavBtn @click.stop="clickFav(list.id)" :isShow="list.isFav" />
+          <TheFavBtn @click.stop="clickFav(list.id)" :isFav="list.isFav" />
           </p>
           <p class="my-3 text-2xl font-bold">
             <span class="text-blue-500" 
@@ -31,7 +31,6 @@
 </template>
 
 <script setup>
-  import { defineProps } from "vue";
   import store from "../store/store";
   import { useRouter } from "vue-router";
   import TheFavBtn from "./TheFavBtn.vue";

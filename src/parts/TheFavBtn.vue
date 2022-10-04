@@ -1,5 +1,5 @@
 <template>
-<button v-if="isShow"
+<button v-if="isFav"
     class="ml-3 px-2 text-[15px] text-red-500 border-2 border-[#fdba74] rounded-xl translate-y-[-5px] bg-[#fdba74] hover:shadow-[0_0_8px_3px_rgba(0,0,0,0.2)] transition">
     お気に入りを解除&hearts;
   </button>
@@ -10,9 +10,8 @@
 </template>
 
 <script setup>
-  import { defineProps } from "vue";
 
   defineProps({
-    isShow: { type: Boolean, required: true }
+    isFav: { type: Boolean, required: true }
   })
 </script>
