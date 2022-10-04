@@ -95,7 +95,7 @@ const mutations = {
             let month = d.getMonth()
             let day = d.getDate()
             newAnimal.publish =  `${year}年 ${month}月 ${day}日`
-            state.memos.unshift(newAnimal)
+            state.animals.unshift(newAnimal)
         }
     },
     // お気に入りを着け外しする

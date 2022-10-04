@@ -1,6 +1,6 @@
 <template>
-  <div class="relative p-3 bg-gray-200 rounded-2xl border-2 border-gray-400">
-    <p class="mb-4 font-bold text-2xl text-center">名前: {{ list.name }}</p>
+  <div class="relative p-3 bg-amber-50 rounded-2xl border-2 border-gray-400">
+    <p class="mb-4 font-bold text-3xl text-center">名前: {{ list.name }}</p>
     <figure class="flex">
       <img 
         class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 
@@ -8,9 +8,9 @@
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">
           <p class="text-center my-5 font-bold">
-            <span class="text-blue-500" v-if="list.gender === 'オス'">♂</span> 
-            <span class="text-red-500" v-else>♀</span>
-            {{ list.gender }} {{ list.age }}歳 <span v-if="list.week">{{ list.week }}週</span>
+            <span class="text-blue-500" v-if="list.gender === 'male'">♂オス</span> 
+            <span class="text-red-500" v-else>♀メス</span>
+            {{ list.age }}歳 / {{ list.place }} <span v-if="list.week">{{ list.week }}週</span>
           </p>
           <p class="mb-10 ">
             性格: {{ list.chara.join(", ") }}
