@@ -20,7 +20,6 @@ https://zenn.dev/offers/articles/20220523-component-design-best-practice
 #### ○AnimalList.vue
 &ensp;動物たちのリストを表示するためのContainer(入れ物)としての役割です。  
 &ensp;後述するListItem.vueとは, Container ⇔ View(ステートレスで受け取ったpropsのみで機能する)の関係です  
- \- App.vueからroute.paramsを受け取った場合, お気に入り登録されている動物のリストをListItem.vueに渡します
 
 #### ○AnimalListItem.vue
 &ensp;親コンポーネントであるAnimalList.vueから動物たちのリストを受け取り, それらを表示します。
