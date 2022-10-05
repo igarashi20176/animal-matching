@@ -49,9 +49,7 @@
       </div>
     </div>
 
-    <input type="radio" v-model="tags.model" value="test" id="test">
-    <label for="test">テスト</label>
-
+    <!-- 動物のリストを表示 -->
     <ul v-for="list in lists">
       <li :key="list.id">
         <AnimalListItem :list="list" />

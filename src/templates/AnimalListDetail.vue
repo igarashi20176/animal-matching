@@ -1,8 +1,8 @@
 <template>
-  <div class="relative p-3 bg-amber-50 rounded-2xl border-2 border-gray-400">
+  <div class="relative p-3 bg-amber-50 rounded-2xl border-2 shadow-[6px_4px_5px_0px_rgba(0,0,0,0.3)] border-gray-400">
     <p class="mb-4 font-bold text-3xl text-center">名前: {{ list.name }}</p>
     <figure class="flex">
-      <img 
+      <img
         class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 
         :src="`/src/assets/images/${list.img}.jpg`" :alt="list.name">
       <figcaption class="ml-3 text-2xl">
