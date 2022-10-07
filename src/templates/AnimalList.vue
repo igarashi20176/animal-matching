@@ -1,10 +1,12 @@
 <template>
-  <div class="relative">
+  <div class="relative" v-if="!isDetail">
     <h2
       class="font-bold text-center text-3xl width-[2px] py-3 mb-14 border-b-2 border-gray-400">
       一覧
     </h2>
     
+    <button @click="getImages" class="p-2 border-2 border-orange-300 bg-orange-300">タッチ</button>
+
     <!-- フィルター機能 -->
     <button 
       class="absolute top-[8%] right-3 border-2 p-1 rounded-xl bg-gray-300"
@@ -50,21 +52,23 @@
     </div>
 
     <!-- 動物のリストを表示 -->
-    <ul v-for="list in lists">
-      <li :key="list.id">
-        <AnimalListItem :list="list" />
+    <ul v-for="animal in animals">
+      <li :key="animal.id">
+        <animal-list-item :animal="animal" />
       </li>
     </ul>
   </div>
+
+  <animal-list-detail :animal="currentList" @power="moveAnimalDetail" v-if="isDetail" />
 </template>
 
 <script setup>
-  import { computed, ref } from "vue"
-  import { useStore } from "vuex"
+  import { computed, onMounted, ref } from "vue"
   import AnimalListItem from "../parts/AnimalListItem.vue";
+  import AnimalListDetail from "../parts/AnimalListDetail.vue";
   
   /**
-   * firebase install
+   * firebase import
    */
 
   import { collection, doc, 
@@ -72,16 +76,75 @@
     query, orderBy 
   } from "firebase/firestore";
   import { db } from "../firebase";
-  import { getStorage, ref as stRef ,getDownloadURL, listAll } from "firebase/storage";
+  import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
 
+  /**
+   * DB ref
+   */
 
-  const store = useStore()
+  const storage = getStorage()
+  const animalCollectionRef = collection(db, 'animals')
+  // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
 
+  let animals = ref([])
+  let detailIdx = ref(0)
+  let isDetail = ref(false)
+
+  // フィルター機能
   let species = ref('')
   let gender = ref('')
   let isFilter = ref(false)
 
-  // 動物のリストをすべて取得
-  const lists = computed( () => store.getters.getAll )
+  const currentList = computed( () => animals[detailIdx] )
 
+  const moveAnimalDetail = id => {
+    console.log("実行されました");
+    isDetail.value = !isDetail.value
+    detailIdx.value = animals.value.findIndex(animal => animal.id === id)
+  }  
+
+  /**
+   * ドキュメント, 画像を取得
+   */
+  const getImages = () => {
+    animals.value.forEach( animal => {
+      getDownloadURL(fsRef(storage, animal.imgURL))
+        .then((url) => {const xhr = new XMLHttpRequest();
+        xhr.responseType = 'blob';
+        xhr.onload = (event) => {
+          const blob = xhr.response;
+        };
+        xhr.open('GET', url);
+        xhr.send();
+
+        animal.imgURL = url
+      }).catch((error) => {
+        console.log(error);
+      });
+    });
+  }
+  
+  onMounted( () => {
+      onSnapshot(animalCollectionRef, (querySnapshot) => {
+      const fbAnimals = [];
+      querySnapshot.forEach((doc) => {
+        const animal = {
+          id: doc.id,
+          species: doc.data().species,
+          name: doc.data().name,
+          age: doc.data().age,
+          place: doc.data().place,
+          remarks: doc.data().remarks,
+          chara: doc.data().chara,
+          gender: doc.data().gender,
+          isFav: doc.data().isFav,
+          isPresent: doc.data().isPresent,
+          imgURL: doc.data().imgURL
+        }
+        fbAnimals.push(animal)
+      });
+      animals.value = fbAnimals
+    })
+
+  })
 </script>

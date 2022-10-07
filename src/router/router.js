@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Chart from '../templates/ChartList.vue'
 import AnimalList from "../templates/AnimalList.vue";
 import Add from "../templates/AnimalListAdd.vue";
-import Detail from "../templates/AnimalListDetail.vue";
 
 const routes = [
     {
@@ -19,16 +18,6 @@ const routes = [
         path: '/add',
         name: 'add',
         component: Add
-    },
-    {
-        path: '/add',
-        name: 'add',
-        component: Add
-    },
-    {
-        path: '/detail/:id',
-        name: 'detail',
-        component: Detail
     },
     // {
     //     path: '/edit/:id',
