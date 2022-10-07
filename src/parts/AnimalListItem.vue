@@ -11,7 +11,7 @@
           <TheFavBtn @click.stop="clickFav(list.id)" :isFav="list.isFav" />
           </p>
           <p class="my-3 text-2xl font-bold">
-            <span class="text-blue-500" 
+            <span class="text-blue-500" git
               v-if="list.gender === 'male'">♂オス </span> <span class="text-red-500" v-else>♀メス
             </span>
             <span class="text-xl">{{ list.age }}歳 / {{ list.place }}</span>
@@ -20,7 +20,7 @@
         </div>        
       </figure>
       <img 
-        class="absolute top-0 left-0 w-[70px] h-[70px] bg-[]"
+        class="absolute top-0 left-0 w-[70px] h-[70px]"
         src="../assets/images/dog_silhouette.png" alt="dog" v-if="list.species === 'dog'">
       <img
         class="absolute top-0 left-0 w-[70px] h-[70px]"

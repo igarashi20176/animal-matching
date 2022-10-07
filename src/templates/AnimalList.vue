@@ -39,7 +39,7 @@
         <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
           <li>
             <input type="radio" name="gender" v-model="gender" id="female" value="female" class="hidden peer">
-            <label for="female" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">メス</label>
+            <label for="dafemale" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">メス</label>
           </li>
           <li>
             <input type="radio" name="gender" v-model="gender" id="male" value="male" class="hidden peer">            
@@ -59,10 +59,22 @@
 </template>
 
 <script setup>
-  import { computed, reactive, ref } from "vue"
+  import { computed, ref } from "vue"
   import { useStore } from "vuex"
   import AnimalListItem from "../parts/AnimalListItem.vue";
   
+  /**
+   * firebase install
+   */
+
+  import { collection, doc, 
+    addDoc, deleteDoc, updateDoc, onSnapshot,
+    query, orderBy 
+  } from "firebase/firestore";
+  import { db } from "../firebase";
+  import { getStorage, ref as stRef ,getDownloadURL, listAll } from "firebase/storage";
+
+
   const store = useStore()
 
   let species = ref('')
@@ -72,9 +84,4 @@
   // 動物のリストをすべて取得
   const lists = computed( () => store.getters.getAll )
 
-  let tags = reactive([
-    {
-      model: "" // refやreactiveでは反映されない
-    }
-  ])
 </script>
