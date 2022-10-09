@@ -17,7 +17,7 @@ import TheHeader from './parts/TheHeader.vue';
 import TheFooter from './parts/TheFooter.vue';
 import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
 
-const title = "あにまるちゃーと"
+const title = "あにまるまっちんぐ"
 
 const btnA = {
   tag: "診断",

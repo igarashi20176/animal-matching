@@ -15,40 +15,42 @@
     </button>
     <div v-if="isFilter" class="absolute p-1 text-md top-[5%] right-[16%] bg-orange-400 z-10 rounded-2xl">
       <div 
-        class="relative inline-block w-[200px] h-[250px] p-4 font-bold text-[#fff] text-center 
+        class="relative inline-block w-[250px] h-auto p-4 font-bold text-[#fff] text-center 
         before:content-[''] before:absolute before:top-[25px] before:left-full before:border-solid before:border-[15px] before:border-transparent before:border-l-[15px] before:border-l-orange-400 ">
         <p>フィルターを選択してね</p>
         <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
           <li>
-            <input type="radio" name="species" v-model="species" id="dog" value="dog" class="hidden peer">
+            <input type="radio" name="species" v-model="filters.species" id="dog" value="dog" class="hidden peer">
             <label for="dog" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">犬</label>
           </li>
           <li>
-            <input type="radio" name="species" v-model="species" id="cat" value="cat" class="hidden peer">            
+            <input type="radio" name="species" v-model="filters.species" id="cat" value="cat" class="hidden peer">            
             <label for="cat" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">猫</label>
           </li>
         </ul>
         <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
           <li>
-            <input type="radio" name="gender" v-model="gender" id="female" value="female" class="hidden peer">
+            <input type="radio" name="gender" v-model="filters.gender" id="female" value="female" class="hidden peer">
             <label for="female" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">メス</label>
           </li>
           <li>
-            <input type="radio" name="gender" v-model="gender" id="male" value="male" class="hidden peer">            
+            <input type="radio" name="gender" v-model="filters.gender" id="male" value="male" class="hidden peer">            
             <label for="male" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">オス</label>
           </li>
         </ul>
         <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
           <li>
-            <input type="radio" name="gender" v-model="gender" id="female" value="female" class="hidden peer">
-            <label for="dafemale" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">メス</label>
+            <input type="radio" name="isFav" v-model="filters.isFav" id="favTrue" value="true" class="hidden peer">
+            <label for="favTrue" class="m-1 border-2 cursor-pointer block w-[100px] rounded-2xl text-md hover:bg-slate-400 peer-checked:bg-white">お気に入りのみ</label>
           </li>
           <li>
-            <input type="radio" name="gender" v-model="gender" id="male" value="male" class="hidden peer">            
-            <label for="male" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">オス</label>
+            <input type="radio" name="isFav" v-model="filters.isFav" id="favFalse" value="false" class="hidden peer">
+            <label for="favFalse" class="m-1 border-2 cursor-pointer block w-[100px] rounded-2xl text-md hover:bg-slate-400 peer-checked:bg-white">お気に入り以外</label>
           </li>
         </ul>
       </div>
+      <button class="block mt-5 da" @click="getFilteredAnimal">フィルタリングをする</button>
+      <button class="block mt-5 da" @click="resetFilters">リセット</button>
     </div>
 
     <!-- 動物のリストを表示 -->
@@ -72,8 +74,8 @@
    */
 
   import { collection, doc, 
-    addDoc, deleteDoc, updateDoc, onSnapshot,
-    query, orderBy 
+    deleteDoc, updateDoc, onSnapshot,
+    query, orderBy, where 
   } from "firebase/firestore";
   import { db } from "../firebase";
   import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
@@ -89,12 +91,6 @@
   
   // 動物のリスト
   let animals = ref([])
-
-  // フィルター機能
-  let species = ref('')
-  let gender = ref('')
-  let isFilter = ref(false)
-
 
   /**
    * animalListItemとAnimalListDetailの切り替え
@@ -123,6 +119,61 @@
     });
    }
 
+   /**
+   * Filterによる絞り込み
+   */
+  let isFilter = ref(false) 
+  let filters = ref({
+    species: 'Any',
+    gender: 'Any',
+    isFav: 'Any'
+  })
+
+  const resetFilters = () => {
+    filters.value.species = 'Any'
+    filters.value.gender = 'Any'
+    filters.value.isFav = 'Any'
+  }
+
+  const getFilteredAnimal = () => {
+    let q = collection(db, 'animals')
+
+    if ( filters.value.species !== 'Any' ) {
+      q = query(q, where('species', '==', filters.value.species))
+    }
+
+    if ( filters.value.gender !== 'Any' ) {
+      q = query(q, where('gender', '==', filters.value.gender))
+    }
+    
+    if ( filters.value.isFav !== 'Any' ) {
+      const boo = filters.value.isFav === 'true' ? true : false
+      q = query(q, where('isFav', '==', boo))
+    }
+    
+    onSnapshot(q, (querySnapshot) => {
+      const fbAnimals = [];
+      querySnapshot.forEach((doc) => {
+        const animal = {
+          id: doc.id,
+          species: doc.data().species,
+          name: doc.data().name,
+          age: doc.data().age,
+          place: doc.data().place,
+          remarks: doc.data().remarks,
+          chara: doc.data().chara,
+          gender: doc.data().gender,
+          isFav: doc.data().isFav,
+          isPresent: doc.data().isPresent,
+          imgURL: doc.data().imgURL
+        }
+        fbAnimals.push(animal)
+      });
+      animals.value = fbAnimals
+      resetFilters()
+      isFilter.value = !isFilter.value
+    })
+  }
 
   /**
    * ドキュメント, 画像を取得
