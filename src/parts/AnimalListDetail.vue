@@ -4,7 +4,7 @@
     <figure class="flex">
       <img
         class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 
-        :src="`/src/assets/images/${animal.img}.jpg`" :alt="animal.name">
+        :src="`${animal.imgURL}`" :alt="animal.name">
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">
           <p class="text-center my-5 font-bold">
@@ -21,7 +21,8 @@
       </figcaption>
     </figure>
     <button 
-      class="absolute top-3 py-2 p-6  rounded-xl bg-white">
+      class="absolute top-3 py-2 p-6  rounded-xl bg-white"
+      @click="emits('change-list', null)">
       戻る
     </button>
   </div>
@@ -33,4 +34,5 @@
     animal: Object
   })
 
+  const emits = defineEmits([ 'change-list' ])
 </script>

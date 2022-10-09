@@ -26,7 +26,7 @@ const routes = [
     // },
     {
         path: '/*',
-        redirect: '/chart'
+        redirect: '/list'
     }
 ]
 

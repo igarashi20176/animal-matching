@@ -1,15 +1,15 @@
 <template>
-  <!-- @click.prevent="showDetailItem(animal.id) -->
-  <a class="block cursor-pointer" @click.prevent="emit('power', props.animal.id)">
+  <!-- @click.prevent="showDetailItem(props.animal.id) -->
+  <a class="block cursor-pointer" @click.stop="emits('change-detail', props.animal.id)">
     <div class="relative m-6 p-2 border-2 rounded-2xl border-gray-400 bg-[#f9fafb] shadow-[5px_3px_5px_1px_rgba(0,0,0,0.3)] hover:shadow-[0_0_8px_3px_rgba(0,0,0,0.2)] transition hover:translate-y-[-2px]">
       <figure class="flex">
         <img 
-          class="w-[110px] h-[150px] ml-28 mr-10 border-2 border-gray-400 rounded-[9999px]"
+          class="w-[115px] h-[150px] ml-28 mr-10 border-2 border-gray-400 rounded-[9999px]"
           :src="`${props.animal.imgURL}`" :alt="props.animal.name">
         <div> 
           <p class="my-1 text-3xl font-bold">
             {{ props.animal.name }}
-          <the-fav-btn @click.stop="clickFav(props.animal.id)" :isFav="props.animal.isFav" />
+          <the-fav-btn @click.stop="emits('toggle-fav', props.animal.id)" :isFav="props.animal.isFav" />
           </p>
           <p class="my-3 text-2xl font-bold">
             <span class="text-blue-500" git
@@ -39,10 +39,7 @@
     animal: Object
   })
 
-  const emit = defineEmits([ 'power' ])
-
-  const clickFav = id => {
-    store.commit('toggleFav', id)
-  }
+  const emits = defineEmits([ 'change-detail', 'toggle-fav' ])
+  
 
 </script>

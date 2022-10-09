@@ -54,12 +54,12 @@
     <!-- 動物のリストを表示 -->
     <ul v-for="animal in animals">
       <li :key="animal.id">
-        <animal-list-item :animal="animal" />
+        <animal-list-item :animal="animal" @change-detail="moveAnimalDetail" @toggle-fav="toggleFav" />
       </li>
     </ul>
   </div>
 
-  <animal-list-detail :animal="currentList" @power="moveAnimalDetail" v-if="isDetail" />
+  <animal-list-detail :animal="currentList" v-if="isDetail" @change-list="moveAnimalDetail" />
 </template>
 
 <script setup>
@@ -86,22 +86,42 @@
   const animalCollectionRef = collection(db, 'animals')
   // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
 
+  // 動物のリスト
   let animals = ref([])
-  let detailIdx = ref(0)
-  let isDetail = ref(false)
 
   // フィルター機能
   let species = ref('')
   let gender = ref('')
   let isFilter = ref(false)
 
-  const currentList = computed( () => animals[detailIdx] )
+
+  /**
+   * animalListItemとAnimalListDetailの切り替え
+   */
+  let detailIndex = ref(0)
+  let isDetail = ref(false)
+  // 表示するAnimalListDetailを返す
+  const currentList = computed( () => animals.value[detailIndex.value] )
 
   const moveAnimalDetail = id => {
-    console.log("実行されました");
     isDetail.value = !isDetail.value
-    detailIdx.value = animals.value.findIndex(animal => animal.id === id)
+
+    if ( id !== null )
+    detailIndex.value = animals.value.findIndex(animal => animal.id === id)
   }  
+
+
+  /**
+   * お気に入りの着け外し
+   */
+  const toggleFav = id => {
+    let index = animals.value.findIndex(animal => animal.id === id)
+
+    updateDoc(doc(animalCollectionRef, id), {
+      isFav: !animals.value[index].isFav
+    });
+   }
+
 
   /**
    * ドキュメント, 画像を取得
