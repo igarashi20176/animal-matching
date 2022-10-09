@@ -64,8 +64,8 @@
 
 <script setup>
   import { computed, onMounted, ref } from "vue"
-  import AnimalListItem from "../parts/AnimalListItem.vue";
-  import AnimalListDetail from "../parts/AnimalListDetail.vue";
+  import AnimalListItem from "../templates/AnimalListItem.vue";
+  import AnimalListDetail from "../templates/AnimalListDetail.vue";
   
   /**
    * firebase import

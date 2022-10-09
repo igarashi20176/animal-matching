@@ -33,7 +33,7 @@
 
 <script setup>
   import store from "../store/store";
-  import TheFavBtn from "./TheFavBtn.vue";
+  import TheFavBtn from "../parts/TheFavBtn.vue";
 
   const props = defineProps({
     animal: Object

@@ -7,7 +7,7 @@
         :src="`${animal.imgURL}`" :alt="animal.name">
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">
-          <p class="text-center my-5 font-bold">
+          <p class="text-center my-5 font-bold text-2xl">
             <span class="text-blue-500" v-if="animal.gender === 'male'">♂オス</span> 
             <span class="text-red-500" v-else>♀メス</span>
             {{ animal.age }}歳 / {{ animal.place }} <span v-if="animal.week">{{ animal.week }}週</span>
@@ -21,7 +21,7 @@
       </figcaption>
     </figure>
     <button 
-      class="absolute top-3 py-2 p-6  rounded-xl bg-white"
+      class="absolute top-3 py-2 p-6 rounded-xl bg-white"
       @click="emits('change-list', null)">
       戻る
     </button>

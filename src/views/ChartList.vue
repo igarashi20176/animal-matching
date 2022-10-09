@@ -12,7 +12,7 @@
 
 <script setup>
 	import { computed, ref } from "vue";
-	import ChartListItem from "../parts/ChartListItem.vue";
+	import ChartListItem from "../templates/ChartListItem.vue";
 	import TheResultA from "../parts/TheResultA.vue";
 	import TheResultB from "../parts/TheResultB.vue";
 	import TheResultC from "../parts/TheResultC.vue";
