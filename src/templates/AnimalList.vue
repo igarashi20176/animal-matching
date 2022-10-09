@@ -86,6 +86,7 @@
   const animalCollectionRef = collection(db, 'animals')
   // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
 
+  
   // 動物のリスト
   let animals = ref([])
 
