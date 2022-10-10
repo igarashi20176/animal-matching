@@ -2,20 +2,15 @@
 	<div class="w-3/4  min-w-[600px] m-auto p-2 bg-[#fafafa]">
 		<h2 class="font-bold text-3xl text-center mb-3">診断チャート</h2>
 		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
-		<p class="text-center mb-12 border-b-2 border-gray-400" v-else>診断結果</p>
+		<p class="text-center mb-12 border-b-2 border-gray-400" v-else>マッチング結果結果</p>
 
-		<chart-list-item v-if="!isEnd" @send-answer="countScore" :chart="sendChart" />
-		<component v-else :is="currentComponent" />
-
+		<chart-list-item :chart="sendChart" @send-answer="countNum" />
 	</div>
 </template>
 
 <script setup>
 	import { computed, ref } from "vue";
 	import ChartListItem from "../templates/ChartListItem.vue";
-	import TheResultA from "../parts/TheResultA.vue";
-	import TheResultB from "../parts/TheResultB.vue";
-	import TheResultC from "../parts/TheResultC.vue";
 
 	const charts = [
 		{

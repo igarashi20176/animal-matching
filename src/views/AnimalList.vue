@@ -5,8 +5,10 @@
       一覧
     </h2>
 
-    <p class="text-center text-xl underline" v-if="isEmptySetup">データが取得できませんでした</p>
-    <p class="text-center text-xl underline" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+    <div class="text-center">
+      <p class="inline text-xl border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
+      <p class="inline text-xl border-b-2" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+    </div>
 
     <!-- フィルター機能 -->
     <button 
