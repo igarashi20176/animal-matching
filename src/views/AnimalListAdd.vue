@@ -10,7 +10,7 @@
     <div class="mb-5 p-2">
       <input 
         class="p-2 rounded-md w-1/2 h-12 focus:bg-yellow-100 focus:ring-[#333]" 
-        type="text" v-model="name" placeholder="名前">
+        type="text" v-model="name" placeholder="お名前">
     </div>
 
     <div class="flex justify-center">

@@ -3,7 +3,7 @@
     <p class="mb-4 font-bold text-3xl text-center">名前: {{ animal.name }}</p>
     <figure class="flex">
       <img
-        class="w-[250px] h-[350px] rounded-xl border-2 border-gray-400" 
+        class="w-[300px] h-[350px] rounded-xl border-2 border-gray-400" 
         :src="`${animal.imgURL}`" :alt="animal.name">
       <figcaption class="ml-3 text-2xl">
         <div class="text-center font-bold">

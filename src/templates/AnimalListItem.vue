@@ -4,7 +4,7 @@
     <div class="relative m-6 p-2 border-2 rounded-2xl border-gray-400 bg-[#f9fafb] shadow-[5px_3px_5px_1px_rgba(0,0,0,0.3)] hover:shadow-[0_0_8px_3px_rgba(0,0,0,0.2)] transition hover:translate-y-[-2px]">
       <figure class="flex">
         <img 
-          class="w-[115px] h-[150px] ml-28 mr-10 border-2 border-gray-400 rounded-[9999px]"
+          class="w-[120px] h-[150px] ml-28 mr-10 border-2 border-gray-400 rounded-md"
           :src="`${props.animal.imgURL}`" :alt="props.animal.name">
         <div> 
           <p class="my-1 text-3xl font-bold">
