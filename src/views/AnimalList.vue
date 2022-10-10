@@ -4,12 +4,13 @@
       class="font-bold text-center text-3xl width-[2px] py-3 mb-14 border-b-2 border-gray-400">
       一覧
     </h2>
-    
-    <button @click="getImages" class="p-2 border-2 border-orange-300 bg-orange-300">タッチ</button>
+
+    <p class="text-center text-xl underline" v-if="isEmptySetup">データが取得できませんでした</p>
+    <p class="text-center text-xl underline" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
 
     <!-- フィルター機能 -->
     <button 
-      class="absolute top-[8%] right-3 border-2 p-1 rounded-xl bg-gray-300"
+      class="absolute top-[10%] right-3 border-2 p-1 rounded-xl bg-gray-300"
       @click="isFilter = !isFilter">
       フィルター機能
     </button>
@@ -65,7 +66,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, ref } from "vue"
+  import { computed, onMounted, onUpdated,onBeforeUpdate, ref } from "vue"
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   
@@ -91,6 +92,11 @@
   
   // 動物のリスト
   let animals = ref([])
+  // 初期データ取得数が無かった場合
+  let isEmptySetup = ref(false)
+  // フィルター結果に一致するデータが無い場合
+  let isEmptyFilter = ref(false)
+
 
   /**
    * animalListItemとAnimalListDetailの切り替え
@@ -117,12 +123,63 @@
     updateDoc(doc(animalCollectionRef, id), {
       isFav: !animals.value[index].isFav
     });
-   }
+  }
 
-   /**
+
+  /**
+   * ドキュメント, 画像を取得
+   */
+  
+  onMounted( () => {   
+    console.log("実行されましたA"); 
+    onSnapshot(animalCollectionRef, (querySnapshot) => {
+      const fbAnimals = []
+      querySnapshot.forEach((doc) => {
+        const animal = {
+          id: doc.id,
+          species: doc.data().species,
+          name: doc.data().name,
+          age: doc.data().age,
+          place: doc.data().place,
+          remarks: doc.data().remarks,
+          chara: doc.data().chara,
+          gender: doc.data().gender,
+          isFav: doc.data().isFav,
+          isPresent: doc.data().isPresent,
+          imgURL: doc.data().imgURL
+        }
+        fbAnimals.push(animal)
+      })
+      animals.value = fbAnimals
+      isEmptySetup.value = animals.value.length === 0 ? true : false
+    })
+  })
+
+  onBeforeUpdate( () => {
+    if ( animals.value.length > 0 ) {
+      animals.value.forEach( animal => {
+        getDownloadURL(fsRef(storage, animal.imgURL))
+          .then((url) => {const xhr = new XMLHttpRequest()
+            xhr.responseType = 'blob'
+            xhr.onload = (event) => {
+              const blob = xhr.response
+            }
+            xhr.open('GET', url)
+            xhr.send();
+
+            animal.imgURL = url
+          }).catch((error) => {
+            console.log(error)
+        })
+      })
+    }
+  })
+
+
+  /**
    * Filterによる絞り込み
    */
-  let isFilter = ref(false) 
+   let isFilter = ref(false) 
   let filters = ref({
     species: 'Any',
     gender: 'Any',
@@ -170,53 +227,10 @@
         fbAnimals.push(animal)
       });
       animals.value = fbAnimals
+      isEmptyFilter.value = animals.value.length === 0 ? true : false
       resetFilters()
       isFilter.value = !isFilter.value
     })
   }
 
-  /**
-   * ドキュメント, 画像を取得
-   */
-  const getImages = () => {
-    animals.value.forEach( animal => {
-      getDownloadURL(fsRef(storage, animal.imgURL))
-        .then((url) => {const xhr = new XMLHttpRequest();
-        xhr.responseType = 'blob';
-        xhr.onload = (event) => {
-          const blob = xhr.response;
-        };
-        xhr.open('GET', url);
-        xhr.send();
-
-        animal.imgURL = url
-      }).catch((error) => {
-        console.log(error);
-      });
-    });
-  }
-  
-  onMounted( () => {
-      onSnapshot(animalCollectionRef, (querySnapshot) => {
-      const fbAnimals = [];
-      querySnapshot.forEach((doc) => {
-        const animal = {
-          id: doc.id,
-          species: doc.data().species,
-          name: doc.data().name,
-          age: doc.data().age,
-          place: doc.data().place,
-          remarks: doc.data().remarks,
-          chara: doc.data().chara,
-          gender: doc.data().gender,
-          isFav: doc.data().isFav,
-          isPresent: doc.data().isPresent,
-          imgURL: doc.data().imgURL
-        }
-        fbAnimals.push(animal)
-      });
-      animals.value = fbAnimals
-    })
-
-  })
 </script>

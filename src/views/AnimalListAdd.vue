@@ -7,26 +7,28 @@
       <input class="p-2 rounded-md w-[50%] h-10" type="text" v-model="name" id="namelabel" placeholder="例）タマ">
     </div>
 
-    <div class="text-center mb-5">
-      <label for="genderlabel" class="block p-1 mb-2">性別</label>
-      <select class="p-2 rounded-md h-10 mr-5" list="gender" v-model="gender" id="genderlabel" placeholder="">
-        <option value="male">オス</option>
-        <option value="female">メス</option>
-      </select>
+    <div class="text-center mb-3 flex justify-center gap-x-10">
+      <div class="text-center mb-5">
+        <label for="genderlabel" class="block p-1 mb-2">性別</label>
+        <select class="p-2 rounded-md h-10 mr-5" list="gender" v-model="gender" id="genderlabel" placeholder="">
+          <option value="male">オス</option>
+          <option value="female">メス</option>
+        </select>
+      </div>
+
+      <div class="text-center mb-5">
+        <label for="specieslabel" class="block p-1 mb-2">種別</label>
+        <select class="p-2 rounded-md h-10 mr-5" list="species" v-model="species" id="specieslabel" placeholder="">
+          <option value="dog">ネコ</option>
+          <option value="cat">イヌ</option>
+        </select>
+      </div>
     </div>
 
-    <div class="text-center mb-5">
-      <label for="specieslabel" class="block p-1 mb-2">種別</label>
-      <select class="p-2 rounded-md h-10 mr-5" list="species" v-model="species" id="specieslabel" placeholder="">
-        <option value="dog">ネコ</option>
-        <option value="cat">イヌ</option>
-      </select>
-    </div>
-
-    <div class="text-center mb-7 flex justify-center">
-      <div class="mr-10">
+    <div class="text-center mb-7 flex justify-center gap-x-8">
+      <div>
         <label for="agelabel" class="block p-1 mb-2">年齢(推定)</label>
-        <select class="p-2 rounded-md h-10 mr-5" type="number" list="age" v-model="age" id="agelabel" placeholder="">
+        <select class="p-2 rounded-md mr-5" type="number" list="age" v-model="age" id="agelabel" placeholder="">
           <option value="0">0才</option>
           <option value="1">1才</option>
           <option value="2">2才</option>
@@ -48,7 +50,7 @@
 
       <div>
         <label for="weeklabel" class="block p-1 mb-2">飼育地域</label>
-        <select class="p-2 rounded-md h-10 mr-5" list="age" v-model="place" id="agelabel" placeholder="" min="0">
+        <select class="p-2 rounded-md" list="age" v-model="place" id="agelabel" placeholder="" min="0">
           <option value="北海道">北海道</option>
           <option value="東北">東北</option>
           <option value="関東">関東</option>
