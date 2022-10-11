@@ -59,13 +59,13 @@
 
     <!-- 動物のリストを表示 -->
     <ul v-for="animal in animals">
-      <li :key="animal.id">
-        <animal-list-item :animal="animal" @change-detail="moveAnimalDetail" @toggle-fav="toggleFav" />
+      <li :key="animal.id" class="m-6">
+        <animal-list-item :animal="animal" @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" />
       </li>
     </ul>
   </div>
 
-  <animal-list-detail :animal="currentList" v-if="isDetail" @change-list="moveAnimalDetail" />
+  <animal-list-detail :animal="currentList" v-if="isDetail" @change-list="changeAnimalDetail" />
 </template>
 
 <script setup>
@@ -108,7 +108,7 @@
   // 表示するAnimalListDetailを返す
   const currentList = computed( () => animals.value[detailIndex.value] )
 
-  const moveAnimalDetail = id => {
+  const changeAnimalDetail = id => {
     isDetail.value = !isDetail.value
 
     if ( id !== null )
@@ -180,27 +180,28 @@
   onMounted( async () => {   
     animals.value = await getDocuments(animalCollectionRef)
     isEmptySetup.value = animals.value.length === 0 ? true : false
+    getImages()
   })
 
-  onBeforeUpdate( () => {
-    if ( animals.value.length > 0 ) {
-      animals.value.forEach( animal => {
-        getDownloadURL(fsRef(storage, animal.imgURL))
-          .then((url) => {const xhr = new XMLHttpRequest()
-            xhr.responseType = 'blob'
-            xhr.onload = (event) => {
-              const blob = xhr.response
-            }
-            xhr.open('GET', url)
-            xhr.send();
+  // onBeforeUpdate( () => {
+  //   if ( animals.value.length > 0 ) {
+  //     animals.value.forEach( animal => {
+  //       getDownloadURL(fsRef(storage, animal.imgURL))
+  //         .then((url) => {const xhr = new XMLHttpRequest()
+  //           xhr.responseType = 'blob'
+  //           xhr.onload = (event) => {
+  //             const blob = xhr.response
+  //           }
+  //           xhr.open('GET', url)
+  //           xhr.send();
 
-            animal.imgURL = url
-          }).catch((error) => {
-            console.log(error)
-        })
-      })
-    }
-  })
+  //           animal.imgURL = url
+  //         }).catch((error) => {
+  //           console.log(error)
+  //       })
+  //     })
+  //   }
+  // })
 
 
   /**
