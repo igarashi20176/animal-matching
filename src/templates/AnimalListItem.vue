@@ -32,7 +32,6 @@
 </template>
 
 <script setup>
-  import store from "../store/store";
   import TheFavBtn from "../parts/TheFavBtn.vue";
 
   const props = defineProps({

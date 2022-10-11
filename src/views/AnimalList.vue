@@ -133,7 +133,6 @@
    */
   
   onMounted( () => {   
-    console.log("実行されましたA"); 
     onSnapshot(animalCollectionRef, (querySnapshot) => {
       const fbAnimals = []
       querySnapshot.forEach((doc) => {

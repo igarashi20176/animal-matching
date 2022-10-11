@@ -3,13 +3,15 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDMpx8Snw66URy8b0S4rQK2VGjUSGrSD8M",
-  authDomain: "animal-matching-1fb37.firebaseapp.com",
-  projectId: "animal-matching-1fb37",
-  storageBucket: "animal-matching-1fb37.appspot.com",
-  messagingSenderId: "643416909794",
-  appId: "1:643416909794:web:51dad0d60922907286ce3bbb"
+  // config
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 };
+
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
@@ -19,3 +21,4 @@ export {
   db,
   storage
 }
+
