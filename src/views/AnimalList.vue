@@ -6,8 +6,9 @@
     </h2>
 
     <div class="text-center">
+      <p class="inline text-xl border-b-2 border-[#333]">クリックすると詳細が見れます</p>
       <p class="inline text-xl border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
-      <p class="inline text-xl border-b-2" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+      <p class="inline text-xl border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
     </div>
 
     <!-- フィルター機能 -->
@@ -75,7 +76,6 @@
   /**
    * firebase import
    */
-
   import { collection, doc, 
     deleteDoc, updateDoc, onSnapshot,
     query, orderBy, where 
@@ -83,10 +83,10 @@
   import { db } from "../firebase";
   import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
 
+
   /**
    * DB ref
    */
-
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
   // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
@@ -131,7 +131,6 @@
   /**
    * ドキュメント, 画像を取得
    */
-  
   onMounted( () => {   
     onSnapshot(animalCollectionRef, (querySnapshot) => {
       const fbAnimals = []

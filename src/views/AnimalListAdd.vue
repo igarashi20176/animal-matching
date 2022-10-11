@@ -110,10 +110,11 @@
   import { collection, addDoc } from "firebase/firestore";
   import { db } from "../firebase";
 
-
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
 
+
+  // 登録情報を格納
   let newAnimalInfo = ref({
     name: "",
     species: "",
@@ -126,6 +127,10 @@
     imgName: ""
   })
 
+
+  /**
+   * Firebaseに情報を登録
+   */
   const addAnimal = () => {
     uploadImageFile()
     console.log("画像がアップロードされました");

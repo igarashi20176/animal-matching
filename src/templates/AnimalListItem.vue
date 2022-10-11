@@ -26,7 +26,7 @@
       <img
         class="absolute top-0 left-0 w-[70px] h-[70px]"
         src="../assets/images/cat_silhouette.png" alt="dog" v-if="props.animal.species === 'cat'">
-      <img src="../assets/images/arrow.png" alt="arrow" class="absolute top-1/3 right-5 w-[50px] h-auto rotate-90">
+      <img src="../assets/images/arrow_circle.png" alt="arrow" class="absolute top-1/3 right-5 w-[50px] h-auto">
     </div>
   </a>
 </template>
