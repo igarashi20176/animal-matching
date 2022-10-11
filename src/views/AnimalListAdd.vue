@@ -7,16 +7,26 @@
 
   <div class="w-4/5 text-center m-auto bg-gray-300 py-3 rounded-xl">
 
-    <div class="mb-5 p-2">
+    <div class="mb-6 p-2">
       <input 
         class="p-2 rounded-md w-1/2 h-12 focus:bg-yellow-100 focus:ring-[#333]" 
-        type="text" v-model="name" placeholder="お名前">
+        type="text" v-model="newAnimalInfo.name" placeholder="お名前">
     </div>
+
+    <div class="mb-10">
+      <p class="mb-3" v-if="!newAnimalInfo.imgName">※サムネイルとなるペットの画像を選択してください</p>
+      <p class="mb-3" v-else>画像が選択されました: {{ newAnimalInfo.imgName }}</p>
+      <label class="block w-1/3 m-auto p-2 rounded-md bg-white text-[#333] hover:bg-yellow-100">
+        <input type="file" accept=".jpg, .png, .jpeg" 
+          @change="getImageFile" class="hidden">ファイルを選択
+      </label>
+    </div>
+    
 
     <div class="flex justify-center">
       <select 
         class="w-1/4 h-11 p-2 rounded-tl-md border-r-2 border-b-2 focus:bg-yellow-100" 
-        list="gender" v-model="gender" required>
+        list="gender" v-model="newAnimalInfo.gender" required>
         <option value="">性別</option>
         <option value="male">オス</option>
         <option value="female">メス</option>
@@ -24,17 +34,17 @@
 
       <select 
         class="w-1/4 h-11 p-2 rounded-tr-md border-b-2 focus:bg-yellow-100" 
-        list="species" v-model="species" required>
+        list="species" v-model="newAnimalInfo.species" required>
         <option value="">種別</option>
-        <option value="dog">ネコ</option>
-        <option value="cat">イヌ</option>
+        <option value="car">ネコ</option>
+        <option value="dog">イヌ</option>
       </select>
     </div>
 
     <div class="mb-7 flex justify-center">
       <select 
         class="w-1/4 h-11 p-2 rounded-bl-md border-r-2 focus:bg-yellow-100" 
-        list="age" v-model="age" required>
+        list="age" v-model="newAnimalInfo.age" required>
         <option value="">年齢</option>
         <option value="0">0才</option>
         <option value="1">1才</option>
@@ -56,7 +66,7 @@
 
       <select 
         class="w-1/4 h-11 p-2 rounded-br-md focus:bg-yellow-100"  
-        list="place" v-model="place">
+        list="place" v-model="newAnimalInfo.place">
         <option value="">飼育地域</option>
         <option value="北海道">北海道</option>
         <option value="東北">東北</option>
@@ -72,14 +82,14 @@
       <label for="textlabel" class="block mb-2">詳細</label>
       <textarea  
         class="p-2 rounded-md w-1/2 focus:bg-yellow-100 focus:ring-2 focus:ring-[#333]" 
-        id="textlabel" v-model="text" rows="4" cols="10" placeholder="例) 活発で甘えん坊だけどお利口さん！"></textarea>
+        id="textlabel" v-model="newAnimalInfo.remarks" rows="4" cols="10" placeholder="例) 活発で甘えん坊だけどお利口さん！"></textarea>
     </div>
 
     <div class="mb-7">
       <label for="charalabel" class="block mb-2">性格</label>
       <input 
         class="p-2 rounded-md w-1/2" 
-        type="text" v-model="name" id="charalabel">
+        type="text" v-model="newAnimalInfo.chara" id="charalabel">
     </div>
 
     <div @click="addAnimal">
@@ -91,41 +101,82 @@
 
 <script setup>
   import { ref } from "vue";
+  import { uuid4 } from "uuid4";
+
+  /**
+   * firebase imports
+   */
+  import { getStorage, ref as fsRef, uploadBytes } from "firebase/storage";
   import { collection, addDoc } from "firebase/firestore";
   import { db } from "../firebase";
 
+
+  const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
 
-  
-  let name = ref("")
-  let species = ref("")
-  let age = ref("")
-  let gender = ref("")
-  let place = ref("")
-  let chara = ref(["活発", "好奇心旺盛", "甘えん坊"])
-  let text = ref("")
-  let remarks = ref("")
+  let newAnimalInfo = ref({
+    name: "",
+    species: "",
+    age: "",
+    gender: "",
+    place: "",
+    chara: ["活発", "好奇心旺盛", "甘えん坊"],
+    remarks: "",
+    imgUrl: "",
+    imgName: ""
+  })
 
   const addAnimal = () => {
+    uploadImageFile()
+    console.log("画像がアップロードされました");
+  
     addDoc(animalCollectionRef, {
-      name: name.value,
-      species: species.value,
-      age: Number(age.value),
-      gender: gender.value,
-      place: place.value,
-      remarks: remarks.value,
-      imgURL: "",
+      name: newAnimalInfo.value.name,
+      species: newAnimalInfo.value.species,
+      age: Number(newAnimalInfo.value.age),
+      gender: newAnimalInfo.value.gender,
+      place: newAnimalInfo.value.place,
+      chara: newAnimalInfo.value.chara,
+      remarks: newAnimalInfo.value.remarks,
       isFav: false,
       isPresent: true,
-      chara: chara.value,
+      imgURL: newAnimalInfo.value.imgUrl,
       date: Date.now()
   });
-    name.value = ""
-    species.value = ""
-    age.value = 0
-    gender.value = ""
-    place.value = ""
-    remarks.value = ""
+    newAnimalInfo.value.name = ""
+    newAnimalInfo.value.species = ""
+    newAnimalInfo.value.age = ""
+    newAnimalInfo.value.gender = ""
+    newAnimalInfo.value.place = ""
+    newAnimalInfo.value.remarks = ""
+  }
+
+
+  /**
+   * イメージ画像を取得・アップロード
+   */
+  let imageFileInfo = ref({
+    file: {},
+    uuidFileName: ""
+  })
+
+  const getImageFile = props => {
+    const file = props.target.files[0]
+    imageFileInfo.value.file = file
+    newAnimalInfo.value.imgName = file.name
+    imageFileInfo.value.uuidFileName = `images/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
+  } 
+
+  const uploadImageFile = () => {
+    const storageRef = fsRef(storage, imageFileInfo.value.uuidFileName);
+
+    // firestoreの情報にstorageの画像のURLを結びつける
+    newAnimalInfo.value.imgUrl = `gs://${storageRef.bucket}/${imageFileInfo.value.uuidFileName}`;
+
+    // Firebaseにデータを適切に送るために必要なコード
+    uploadBytes(storageRef, imageFileInfo.value.file).then((snapshot) => {
+      console.log("blobかfileをアップロード", snapshot);
+    });
   }
 
 </script>

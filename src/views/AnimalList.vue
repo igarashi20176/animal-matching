@@ -68,7 +68,7 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onUpdated,onBeforeUpdate, ref } from "vue"
+  import { computed, onMounted, onBeforeUpdate, ref } from "vue"
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   
@@ -180,7 +180,7 @@
   /**
    * Filterによる絞り込み
    */
-   let isFilter = ref(false) 
+  let isFilter = ref(false) 
   let filters = ref({
     species: 'Any',
     gender: 'Any',
