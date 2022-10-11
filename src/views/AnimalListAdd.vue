@@ -92,9 +92,9 @@
         type="text" v-model="newAnimalInfo.chara" id="charalabel">
     </div>
 
-    <div @click="addAnimal">
-      <button class="border-2 border-red-300 px-10 py-1 rounded-2xl hover:bg-red-200">送信</button>
-    </div>  
+    <the-normal-btn @click="addAnimal">
+      ペットを登録する
+    </the-normal-btn>
 
   </div>
 </template>
@@ -102,6 +102,7 @@
 <script setup>
   import { ref } from "vue";
   import { uuid4 } from "uuid4";
+  import TheNormalBtn from "../parts/TheNormalBtn.vue";
 
   /**
    * firebase imports

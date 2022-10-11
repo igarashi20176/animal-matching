@@ -1,6 +1,10 @@
 <template>
   <div class="relative p-3 bg-amber-50 rounded-2xl border-2 shadow-[6px_4px_5px_0px_rgba(0,0,0,0.3)] border-gray-400">
-    <the-normal-btn />
+    <the-normal-btn 
+      class="absolute top-3"
+      @click="emits('change-list', null)">
+      戻る
+    </the-normal-btn>
     <p class="mb-4 font-bold text-3xl text-center"><span class="text-2xl">名前:</span> {{ animal.name }}</p>
     <figure class="flex">
       <img
@@ -25,7 +29,7 @@
 </template>
 
 <script setup>
-  import { TheNormalBtn } from "../parts/TheNormalBtn.vue";
+  import TheNormalBtn from "../parts/TheNormalBtn.vue";
 
   const props = defineProps({
     animal: Object
