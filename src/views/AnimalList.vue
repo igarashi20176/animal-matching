@@ -1,7 +1,7 @@
 <template>
   <div class="relative" v-if="!isDetail">
     <h2
-      class="font-bold text-center text-3xl width-[2px] py-3 mb-14 border-b-2 border-gray-400">
+      class="font-bold text-center text-3xl width-[2px] py-3 mb-10 border-b-2 border-gray-400">
       一覧
     </h2>
 
