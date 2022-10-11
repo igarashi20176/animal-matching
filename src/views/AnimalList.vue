@@ -131,28 +131,55 @@
   /**
    * ドキュメント, 画像を取得
    */
-  onMounted( () => {   
-    onSnapshot(animalCollectionRef, (querySnapshot) => {
-      const fbAnimals = []
-      querySnapshot.forEach((doc) => {
-        const animal = {
-          id: doc.id,
-          species: doc.data().species,
-          name: doc.data().name,
-          age: doc.data().age,
-          place: doc.data().place,
-          remarks: doc.data().remarks,
-          chara: doc.data().chara,
-          gender: doc.data().gender,
-          isFav: doc.data().isFav,
-          isPresent: doc.data().isPresent,
-          imgURL: doc.data().imgURL
-        }
-        fbAnimals.push(animal)
+
+  const getDocuments = query => {
+    return new Promise( function( resolve ) {
+      onSnapshot(query, (querySnapshot) => {
+        const fbAnimals = []
+        querySnapshot.forEach((doc) => {
+          const animal = {
+            id: doc.id,
+            species: doc.data().species,
+            name: doc.data().name,
+            age: doc.data().age,
+            place: doc.data().place,
+            remarks: doc.data().remarks,
+            chara: doc.data().chara,
+            gender: doc.data().gender,
+            isFav: doc.data().isFav,
+            isPresent: doc.data().isPresent,
+            imgURL: doc.data().imgURL
+          }
+          fbAnimals.push(animal)
+        })
+        resolve(fbAnimals)
       })
-      animals.value = fbAnimals
-      isEmptySetup.value = animals.value.length === 0 ? true : false
     })
+  }
+
+  const getImages = () => {
+    if ( animals.value.length > 0 ) {
+      animals.value.forEach( animal => {
+        getDownloadURL(fsRef(storage, animal.imgURL))
+          .then((url) => {const xhr = new XMLHttpRequest()
+            xhr.responseType = 'blob'
+            xhr.onload = (event) => {
+              const blob = xhr.response
+            }
+            xhr.open('GET', url)
+            xhr.send();
+
+            animal.imgURL = url
+          }).catch((error) => {
+            console.log(error)
+        })
+      })
+    }
+  }
+
+  onMounted( async () => {   
+    animals.value = await getDocuments(animalCollectionRef)
+    isEmptySetup.value = animals.value.length === 0 ? true : false
   })
 
   onBeforeUpdate( () => {
@@ -193,7 +220,7 @@
   }
 
   const getFilteredAnimal = () => {
-    let q = collection(db, 'animals')
+    let q =  animalCollectionRef
 
     if ( filters.value.species !== 'Any' ) {
       q = query(q, where('species', '==', filters.value.species))
@@ -207,30 +234,11 @@
       const boo = filters.value.isFav === 'true' ? true : false
       q = query(q, where('isFav', '==', boo))
     }
-    
-    onSnapshot(q, (querySnapshot) => {
-      const fbAnimals = [];
-      querySnapshot.forEach((doc) => {
-        const animal = {
-          id: doc.id,
-          species: doc.data().species,
-          name: doc.data().name,
-          age: doc.data().age,
-          place: doc.data().place,
-          remarks: doc.data().remarks,
-          chara: doc.data().chara,
-          gender: doc.data().gender,
-          isFav: doc.data().isFav,
-          isPresent: doc.data().isPresent,
-          imgURL: doc.data().imgURL
-        }
-        fbAnimals.push(animal)
-      });
-      animals.value = fbAnimals
-      isEmptyFilter.value = animals.value.length === 0 ? true : false
-      resetFilters()
-      isFilter.value = !isFilter.value
-    })
+
+    resetFilters()
+    animals.value = getDocuments(q)
+    isEmptyFilter.value = animals.value.length === 0 ? true : false
+    isFilter.value = !isFilter.value
   }
 
 </script>
