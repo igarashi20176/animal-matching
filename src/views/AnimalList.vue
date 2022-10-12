@@ -17,45 +17,10 @@
       @click="isFilter = !isFilter">
       フィルター機能
     </button>
-    <div v-if="isFilter" class="absolute p-1 text-md top-[5%] right-[16%] bg-orange-400 z-10 rounded-2xl">
-      <div 
-        class="relative inline-block w-[250px] h-auto p-4 font-bold text-[#fff] text-center 
-        before:content-[''] before:absolute before:top-[25px] before:left-full before:border-solid before:border-[15px] before:border-transparent before:border-l-[15px] before:border-l-orange-400 ">
-        <p>フィルターを選択してね</p>
-        <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
-          <li>
-            <input type="radio" name="species" v-model="filters.species" id="dog" value="dog" class="hidden peer">
-            <label for="dog" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">犬</label>
-          </li>
-          <li>
-            <input type="radio" name="species" v-model="filters.species" id="cat" value="cat" class="hidden peer">            
-            <label for="cat" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">猫</label>
-          </li>
-        </ul>
-        <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
-          <li>
-            <input type="radio" name="gender" v-model="filters.gender" id="female" value="female" class="hidden peer">
-            <label for="female" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">メス</label>
-          </li>
-          <li>
-            <input type="radio" name="gender" v-model="filters.gender" id="male" value="male" class="hidden peer">            
-            <label for="male" class="m-1 border-2 cursor-pointer block w-[50px] rounded-2xl text-lg hover:bg-slate-400 peer-checked:bg-white">オス</label>
-          </li>
-        </ul>
-        <ul class="flex justify-center gap-x-2 mt-4 text-slate-700">
-          <li>
-            <input type="radio" name="isFav" v-model="filters.isFav" id="favTrue" value="true" class="hidden peer">
-            <label for="favTrue" class="m-1 border-2 cursor-pointer block w-[100px] rounded-2xl text-md hover:bg-slate-400 peer-checked:bg-white">お気に入りのみ</label>
-          </li>
-          <li>
-            <input type="radio" name="isFav" v-model="filters.isFav" id="favFalse" value="false" class="hidden peer">
-            <label for="favFalse" class="m-1 border-2 cursor-pointer block w-[100px] rounded-2xl text-md hover:bg-slate-400 peer-checked:bg-white">お気に入り以外</label>
-          </li>
-        </ul>
-      </div>
-      <button class="block mt-5 da" @click="getFilteredAnimal">フィルタリングをする</button>
-      <button class="block mt-5 da" @click="resetFilters">リセット</button>
-    </div>
+    
+    <the-radio-btn-col3 v-if="isFilter" 
+      
+      @get-filtered="getFilteredAnimal" />
 
     <!-- 動物のリストを表示 -->
     <ul v-for="animal in animals">
@@ -69,9 +34,10 @@
 </template>
 
 <script setup>
-  import { computed, onMounted, onBeforeUpdate, ref } from "vue"
+  import { computed, onMounted, ref } from "vue"
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
+  import TheRadioBtnCol3 from "../templates/TheRadioBtnCol3.vue";
   
   /**
    * firebase import
@@ -82,6 +48,7 @@
   } from "firebase/firestore";
   import { db } from "../firebase";
   import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
+import { file } from "@babel/types";
 
 
   /**
@@ -94,10 +61,8 @@
   
   // 動物のリスト
   let animals = ref([])
-  // 初期データ取得数が無かった場合
-  let isEmptySetup = ref(false)
-  // フィルター結果に一致するデータが無い場合
-  let isEmptyFilter = ref(false)
+
+ 
 
 
   /**
@@ -177,69 +142,48 @@
     }
   }
 
+
+  // 初期データ取得数が無かった場合
+  let isEmptySetup = ref(false)
+
   onMounted( async () => {   
     animals.value = await getDocuments(animalCollectionRef)
     isEmptySetup.value = animals.value.length === 0 ? true : false
     getImages()
   })
 
-  // onBeforeUpdate( () => {
-  //   if ( animals.value.length > 0 ) {
-  //     animals.value.forEach( animal => {
-  //       getDownloadURL(fsRef(storage, animal.imgURL))
-  //         .then((url) => {const xhr = new XMLHttpRequest()
-  //           xhr.responseType = 'blob'
-  //           xhr.onload = (event) => {
-  //             const blob = xhr.response
-  //           }
-  //           xhr.open('GET', url)
-  //           xhr.send();
-
-  //           animal.imgURL = url
-  //         }).catch((error) => {
-  //           console.log(error)
-  //       })
-  //     })
-  //   }
-  // })
-
 
   /**
    * Filterによる絞り込み
    */
   let isFilter = ref(false) 
-  let filters = ref({
-    species: 'Any',
-    gender: 'Any',
-    isFav: 'Any'
-  })
+  // フィルター結果に一致するデータが無い場合
+  let isEmptyFilter = ref(false)
 
-  const resetFilters = () => {
-    filters.value.species = 'Any'
-    filters.value.gender = 'Any'
-    filters.value.isFav = 'Any'
-  }
-
-  const getFilteredAnimal = () => {
+  const getFilteredAnimal = filters => {
+    const fields = Object.keys(filters)
     let q =  animalCollectionRef
 
-    if ( filters.value.species !== 'Any' ) {
-      q = query(q, where('species', '==', filters.value.species))
-    }
+    fields.forEach(field => {
+      if ( filters[field] !== 'Any' ) {
+        filters[field] = StringToBoolean(filters[field])
+        q = query(q, where(field, '==', filters[field]))  
+      }
+    })
 
-    if ( filters.value.gender !== 'Any' ) {
-      q = query(q, where('gender', '==', filters.value.gender))
-    }
-    
-    if ( filters.value.isFav !== 'Any' ) {
-      const boo = filters.value.isFav === 'true' ? true : false
-      q = query(q, where('isFav', '==', boo))
-    }
-
-    resetFilters()
     animals.value = getDocuments(q)
     isEmptyFilter.value = animals.value.length === 0 ? true : false
     isFilter.value = !isFilter.value
+  }
+
+  const StringToBoolean = string => {
+    if ( string === 'true' ) {
+      return true
+    } else if( string === 'false' ) {
+      return false
+    } else {
+      return string
+    }
   }
 
 </script>
