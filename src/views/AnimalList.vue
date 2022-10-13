@@ -1,25 +1,27 @@
 <template>
   <div class="relative" v-if="!isDetail">
     <h2
-      class="font-bold text-center text-3xl width-[2px] py-3 mb-10 border-b-2 border-gray-400">
+      class="font-bold text-center text-3xl width-[2px] py-3 mb-5 border-b-2 border-gray-400">
       一覧
     </h2>
 
-    <div class="text-center">
-      <p class="inline text-xl border-b-2 border-[#333]">クリックすると詳細が見れます</p>
-      <p class="inline text-xl border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
-      <p class="inline text-xl border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
-    </div>
+    <div class="flex justify-between">
+      <div>
+        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
+        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+      </div>
 
-    <!-- フィルター機能 -->
-    <button 
-      class="absolute top-[10%] right-3 border-2 p-1 rounded-xl bg-gray-300"
-      @click="isFilter = !isFilter">
-      フィルター機能
-    </button>
+      <!-- フィルター機能 -->
+      <button 
+        class="text-right border-2 p-1 rounded-xl bg-gray-300"
+        @click="isFilter = !isFilter">
+        フィルター機能
+      </button>
+    </div>
     
     <the-radio-btn-col3 v-if="isFilter" 
-      
+      :btnA="filterBtns[0]" :btnB="filterBtns[1]" :btnC="filterBtns[2]"
+      class=""
       @get-filtered="getFilteredAnimal" />
 
     <!-- 動物のリストを表示 -->
@@ -48,7 +50,6 @@
   } from "firebase/firestore";
   import { db } from "../firebase";
   import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
-import { file } from "@babel/types";
 
 
   /**
@@ -59,10 +60,33 @@ import { file } from "@babel/types";
   // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
 
   
+  // フィルターのボタン
+  const filterBtns = [
+    {
+      field: "species",
+      valueA: "dog",
+      valueB: "cat", 
+      labelNameA: "犬",
+      labelNameB: "猫" 
+    },
+    {
+      field: "gender",
+      valueA: "male",
+      valueB: "female", 
+      labelNameA: "オス",
+      labelNameB: "メス" 
+    },
+    {
+      field: "isFav",
+      valueA: "true",
+      valueB: "false", 
+      labelNameA: "お気に入りのみ",
+      labelNameB: "お気に入り以外" 
+    }
+  ]
+
   // 動物のリスト
   let animals = ref([])
-
- 
 
 
   /**
@@ -149,7 +173,12 @@ import { file } from "@babel/types";
   onMounted( async () => {   
     animals.value = await getDocuments(animalCollectionRef)
     isEmptySetup.value = animals.value.length === 0 ? true : false
-    getImages()
+    if ( animals.value.length === 0 ) {
+      isEmptySetup = true
+    } else {
+      isEmptySetup = false
+      getImages()
+    }
   })
 
 
@@ -160,7 +189,7 @@ import { file } from "@babel/types";
   // フィルター結果に一致するデータが無い場合
   let isEmptyFilter = ref(false)
 
-  const getFilteredAnimal = filters => {
+  const getFilteredAnimal = async filters => {
     const fields = Object.keys(filters)
     let q =  animalCollectionRef
 
@@ -171,8 +200,13 @@ import { file } from "@babel/types";
       }
     })
 
-    animals.value = getDocuments(q)
-    isEmptyFilter.value = animals.value.length === 0 ? true : false
+    animals.value = await getDocuments(q)
+    if ( animals.value.length === 0 ) {
+      isEmptyFilter.value = true
+    } else {
+      isEmptyFilter.value = false
+      getImages()
+    }
     isFilter.value = !isFilter.value
   }
 
