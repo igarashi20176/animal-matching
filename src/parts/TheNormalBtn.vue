@@ -1,6 +1,6 @@
 <template>
   <button 
-    class="py-2 px-6 border-2 border-gray-400 rounded-md bg-green-200 transition-all hover:bg-green-300 hover:text-[#fff]">
+    class="py-1 px-6 border-2 font-medium border-slate-400 rounded-md transition-all bg-green-200 hover:bg-green-300 hover:translate-y-[-1px]">
     <slot>ボタン</slot>
   </button>
 </template>
