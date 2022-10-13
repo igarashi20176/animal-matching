@@ -12,18 +12,18 @@
       </div>
 
       <!-- フィルター機能 -->
-      <button 
-        class="text-right border-2 p-1 rounded-xl bg-gray-300"
-        @click="isFilter = !isFilter">
+      <the-normal-btn  @click="isFilter = !isFilter">
         フィルター機能
-      </button>
-    </div>
-    
-    <the-radio-btn-col3 v-if="isFilter" 
-      :btnA="filterBtns[0]" :btnB="filterBtns[1]" :btnC="filterBtns[2]"
-      class=""
-      @get-filtered="getFilteredAnimal" />
+      </the-normal-btn>
 
+      <div class="absolute z-10 right-[19%] top-[7%]">
+        <the-radio-btn-col3 v-if="isFilter" 
+          :btnA="filterBtns[0]" :btnB="filterBtns[1]" :btnC="filterBtns[2]"
+          @get-filtered="getFilteredAnimal" />
+      </div>
+    </div>
+   
+    
     <!-- 動物のリストを表示 -->
     <ul v-for="animal in animals">
       <li :key="animal.id" class="m-6">
@@ -40,6 +40,7 @@
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   import TheRadioBtnCol3 from "../templates/TheRadioBtnCol3.vue";
+  import TheNormalBtn from "../parts/TheNormalBtn.vue";
   
   /**
    * firebase import
@@ -66,8 +67,8 @@
       field: "species",
       valueA: "dog",
       valueB: "cat", 
-      labelNameA: "犬",
-      labelNameB: "猫" 
+      labelNameA: "イヌ",
+      labelNameB: "ネコ" 
     },
     {
       field: "gender",

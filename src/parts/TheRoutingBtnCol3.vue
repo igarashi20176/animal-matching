@@ -1,5 +1,5 @@
 <template> 
-   <div class="flex justify-center gap-x-2 text-center w-2/5 min-w-[450px] m-auto box-border mt-10 mb-8 p-2 border-2 rounded-3xl bg-[#f9fafb]">
+   <div class="flex justify-center gap-x-2 text-center w-2/5 min-w-[450px] m-auto box-border mt-10 mb-8 p-2 border-2 border-gray-300 rounded-3xl bg-[#f9fafb]">
     <router-link :to="btnA.path">
       <!-- :class="['w-[100px] border-2 rounded-md p-1 mx-1 hover:bg-pink-200 active:bg-pink-300', { 'bg-pink-200 shadow-[0_0_7px_3px_rgba(0,0,0,0.2)] transition': currentBtn === btnA.tag }]" -->
       <button 

@@ -1,9 +1,9 @@
 <template>
   <the-header :title="title" />
 
-  <the-routing-btn-col3 :btn-a="btnA" :btn-b="btnB" :btn-c="btnC" />
+  <the-routing-btn-col3 :btn-a="routingBtns[0]" :btn-b="routingBtns[1]" :btn-c="routingBtns[2]" />
 
-  <div class="relative scroll h-[450px] w-[800px] overflow-auto border-2 border-gray-400 rounded-2xl m-auto p-2 bg-[#f9fafb]">
+  <div class="relative scroll h-[450px] w-[800px] overflow-auto border-2 border-gray-400 rounded-2xl m-auto p-2 bg-[#fff]">
     <router-view />
   </div>
 
@@ -19,21 +19,20 @@ import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
 
 const title = "あにまるまっちんぐ"
 
-const btnA = {
-  tag: "診断",
-  path: "/chart"
-}
-
-const btnB = {
-  tag: "一覧",
-  path: "/list"
-}
-
-const btnC = {
-  tag: "追加",
-  path: "/add"
-}
-
+const routingBtns = [
+  {
+    tag: "診断",
+    path: "/chart"
+  },
+  {
+    tag: "一覧",
+    path: "/list"
+  },
+  {
+    tag: "追加",
+    path: "/add"
+  }
+]
 
 </script>
 
@@ -41,9 +40,5 @@ const btnC = {
   .scroll::-webkit-scrollbar{
     display: none;
   }
-  .custom-text {
-    writing-mode: vertical-lr;
-    font-size: 20px;
-    font-weight: bold;
-  }
+
 </style>

@@ -1,5 +1,5 @@
 <template>
-	<div class="w-3/4  min-w-[600px] m-auto p-2 bg-[#fafafa]">
+	<div class="w-3/4  min-w-[600px] m-auto p-2">
 		<h2 class="font-bold text-3xl text-center mb-3">性格診断</h2>
 		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
 		<p class="text-center mb-8 border-b-2 border-gray-400" v-else>診断結果</p>
