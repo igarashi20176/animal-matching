@@ -121,7 +121,6 @@
   /**
    * ドキュメント, 画像を取得
    */
-
   const getDocuments = query => {
     return new Promise( function( resolve ) {
       onSnapshot(query, (querySnapshot) => {
@@ -190,9 +189,10 @@
   // フィルター結果に一致するデータが無い場合
   let isEmptyFilter = ref(false)
 
+  // フィルター機能を持つコンポーネントからのemitsで引数取得
   const getFilteredAnimal = async filters => {
     const fields = Object.keys(filters)
-    let q =  animalCollectionRef
+    let q = animalCollectionRef
 
     fields.forEach(field => {
       if ( filters[field] !== 'Any' ) {

@@ -1,7 +1,7 @@
 <template>
   <!-- @click.prevent="showDetailItem(props.animal.id) -->
   <a class="block cursor-pointer" @click.stop="emits('change-detail', props.animal.id)">
-    <div class="relative p-2 border-2 rounded-3xl border-gray-400 bg-lime-50 shadow-[5px_3px_5px_1px_rgba(0,0,0,0.3)] hover:shadow-[0_0_8px_3px_rgba(0,0,0,0.2)] transition hover:translate-y-[-2px]">
+    <div class="shadow-under hover:shadow-natural relative p-2 border-2 rounded-3xl border-gray-400 bg-lime-50 transition hover:translate-y-[1px]">
       <figure class="flex gap-x-10">
         <img 
           class="w-[120px] h-[150px] ml-32 border-2 border-gray-400 rounded-md"
@@ -40,5 +40,4 @@
 
   const emits = defineEmits([ 'change-detail', 'toggle-fav' ])
   
-
 </script>

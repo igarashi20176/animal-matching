@@ -4,7 +4,7 @@
     <p><input type="text" class="h-9 rounded-md p-1" placeholder="Email" v-model="email"></p>
     <p><input type="password" class="h-9 rounded-md p-1" placeholder="Password" v-model="password"></p>
     <the-normal-btn class="inline" @click="register">
-      登録
+      登録する
     </the-normal-btn>
   </div>
 </template>
