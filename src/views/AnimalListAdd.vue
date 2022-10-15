@@ -97,12 +97,14 @@
     </the-normal-btn>
 
   </div>
+
 </template>
 
 <script setup>
   import { ref } from "vue";
   import { uuid4 } from "uuid4";
   import TheNormalBtn from "../parts/TheNormalBtn.vue";
+  import { useStore } from "vuex";
 
   /**
    * firebase imports
@@ -115,6 +117,7 @@
   const animalCollectionRef = collection(db, 'animals')
 
 
+  const store = useStore()
   // 登録情報を格納
   let newAnimalInfo = ref({
     name: "",
@@ -132,9 +135,8 @@
   /**
    * Firebaseに情報を登録
    */
-  const addAnimal = () => {
+  const addAnimal = async () => {
     uploadImageFile()
-    console.log("画像がアップロードされました");
   
     addDoc(animalCollectionRef, {
       name: newAnimalInfo.value.name,
@@ -147,6 +149,7 @@
       isFav: false,
       isPresent: true,
       imgURL: newAnimalInfo.value.imgUrl,
+      editor: store.state.userId,
       date: Date.now()
   });
     newAnimalInfo.value.name = ""
@@ -166,11 +169,16 @@
     uuidFileName: ""
   })
 
+  // inputで画像を選択した時に発火
+  const FOLDER_NAME = "images"
+  
   const getImageFile = props => {
     const file = props.target.files[0]
     imageFileInfo.value.file = file
+    // 画像が選択された事を表示する
     newAnimalInfo.value.imgName = file.name
-    imageFileInfo.value.uuidFileName = `images/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
+    // storage内のフォルダ/ファイル名
+    imageFileInfo.value.uuidFileName = `${FOLDER_NAME}/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
   } 
 
   const uploadImageFile = () => {
@@ -181,7 +189,7 @@
 
     // Firebaseにデータを適切に送るために必要なコード
     uploadBytes(storageRef, imageFileInfo.value.file).then((snapshot) => {
-      console.log("blobかfileをアップロード", snapshot);
+      console.log("画像をアップロード", snapshot);
     });
   }
 
