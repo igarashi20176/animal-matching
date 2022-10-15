@@ -18,16 +18,16 @@
 
       <div class="absolute z-10 right-[19%] top-[7%]">
         <the-radio-btn-col3 v-if="isFilter" 
-          :btnA="filterBtns[0]" :btnB="filterBtns[1]" :btnC="filterBtns[2]"
+          :btn-a="filterBtns[0]" :btn-b="filterBtns[1]" :btn-c="filterBtns[2]"
           @get-filtered="getFilteredAnimal" />
       </div>
     </div>
    
     
     <!-- 動物のリストを表示 -->
-    <ul v-for="animal in animals">
+    <ul v-for="animal, idx in animals">
       <li :key="animal.id" class="m-6">
-        <animal-list-item :animal="animal" @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" />
+        <animal-list-item :is-editor="isEditor(idx)" :is-fav="isFav(animal.id)" :animal="animal" @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" />
       </li>
     </ul>
   </div>
@@ -37,6 +37,7 @@
 
 <script setup>
   import { computed, onMounted, ref } from "vue"
+  import { useStore } from "vuex";
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   import TheRadioBtnCol3 from "../templates/TheRadioBtnCol3.vue";
@@ -45,9 +46,9 @@
   /**
    * firebase import
    */
-  import { collection, doc, 
+  import { collection, doc, getDoc,
     deleteDoc, updateDoc, onSnapshot,
-    query, orderBy, where 
+    query, where 
   } from "firebase/firestore";
   import { db } from "../firebase";
   import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
@@ -58,9 +59,14 @@
    */
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
-  // const todoCollectionQuery = query(animalCollectionRef, orderBy("date", "desc"));
+  let userDocRef = null
 
-  
+
+  const store = useStore()
+  // 動物のリスト
+  let animals = ref([])
+  // ユーザの情報
+  let userInfo = ref({})
   // フィルターのボタン
   const filterBtns = [
     {
@@ -86,8 +92,30 @@
     }
   ]
 
-  // 動物のリスト
-  let animals = ref([])
+  
+  /**
+   * computed
+   */
+
+  // ログインユーザーとデータの登録者が一致するか
+  const isEditor = computed( () => {
+    return idx => {
+      if ( store.state.isLogin ) {
+        return ( store.state.userId === animals.value[idx].editor)
+      }
+    }
+  })
+
+  // ログインユーザにお気に入り登録されているデータか
+  const isFav = computed( () => {
+    return id => {
+      return userInfo.value.favList.some( doc => {
+        if ( doc === id ){
+          return true
+        }
+      })
+    }
+  })
 
 
   /**
@@ -101,19 +129,24 @@
   const changeAnimalDetail = id => {
     isDetail.value = !isDetail.value
 
-    if ( id !== null )
-    detailIndex.value = animals.value.findIndex(animal => animal.id === id)
+    if ( id !== null ) {
+      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
+    }
   }  
 
 
   /**
    * お気に入りの着け外し
    */
-  const toggleFav = id => {
-    let index = animals.value.findIndex(animal => animal.id === id)
 
-    updateDoc(doc(animalCollectionRef, id), {
-      isFav: !animals.value[index].isFav
+  const toggleFav = async ( id, isFav ) => {
+    if ( isFav ) {
+      userInfo.value.favList =  userInfo.value.favList.filter( doc =>  !doc === id )
+    } else {
+      userInfo.value.favList.push(id)
+    }
+    updateDoc( userDocRef , {
+      favList: userInfo.value.favList
     });
   }
 
@@ -137,7 +170,8 @@
             gender: doc.data().gender,
             isFav: doc.data().isFav,
             isPresent: doc.data().isPresent,
-            imgURL: doc.data().imgURL
+            imgURL: doc.data().imgURL,
+            editor: doc.data().editor
           }
           fbAnimals.push(animal)
         })
@@ -179,6 +213,17 @@
       isEmptySetup = false
       getImages()
     }
+
+    if ( store.state.userId ) {
+      userDocRef = doc(db, 'users', store.state.userId )
+    }
+
+    if ( userDocRef ) {
+      await getDoc( userDocRef )
+        .then(data => {
+          userInfo.value = data.data()
+        })
+    }
   })
 
 
@@ -205,7 +250,7 @@
     if ( animals.value.length === 0 ) {
       isEmptyFilter.value = true
     } else {
-      isEmptyFilter.value = false
+      isEmptyFilter.value = false 
       getImages()
     }
     isFilter.value = !isFilter.value
@@ -220,5 +265,5 @@
       return string
     }
   }
-
+  
 </script>

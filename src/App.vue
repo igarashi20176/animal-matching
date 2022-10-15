@@ -10,10 +10,6 @@
   <the-footer>
     <h2 class="text-center">@copyright.inc</h2>
   </the-footer>
-
-  <h2>
-    kadah
-  </h2>
 </template>
 
 <script setup>
