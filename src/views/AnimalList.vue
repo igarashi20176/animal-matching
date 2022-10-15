@@ -1,5 +1,7 @@
 <template>
+
   <div class="relative" v-if="!isDetail">
+
     <h2
       class="font-bold text-center text-3xl width-[2px] py-3 mb-5 border-b-2 border-gray-400">
       一覧
@@ -25,14 +27,16 @@
    
     
     <!-- 動物のリストを表示 -->
-    <ul v-for="animal, idx in animals">
+    <ul v-for="animal in animals">
       <li :key="animal.id" class="m-6">
-        <animal-list-item :is-editor="isEditor(idx)" :is-fav="isFav(animal.id)" :animal="animal" @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" />
+        <animal-list-item :is-editor="isEditor(animal.id)" :is-fav="isFav(animal.id)" :animal="animal" 
+          @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" @delete-doc="deleteDocument" />
       </li>
     </ul>
+
   </div>
 
-  <animal-list-detail :animal="currentList" v-if="isDetail" @change-list="changeAnimalDetail" />
+  <animal-list-detail v-else :animal="currentList" @change-list="changeAnimalDetail" />
 </template>
 
 <script setup>
@@ -51,7 +55,7 @@
     query, where 
   } from "firebase/firestore";
   import { db } from "../firebase";
-  import { getStorage, ref as fsRef ,getDownloadURL } from "firebase/storage";
+  import { getStorage, deleteObject, ref as fsRef ,getDownloadURL } from "firebase/storage";
 
 
   /**
@@ -65,8 +69,6 @@
   const store = useStore()
   // 動物のリスト
   let animals = ref([])
-  // ユーザの情報
-  let userInfo = ref({})
   // フィルターのボタン
   const filterBtns = [
     {
@@ -99,9 +101,12 @@
 
   // ログインユーザーとデータの登録者が一致するか
   const isEditor = computed( () => {
-    return idx => {
+    return id => {
       if ( store.state.isLogin ) {
-        return ( store.state.user.uid === animals.value[idx].editor)
+        let b = animals.value.find(animal => animal.id === id )
+        return ( store.state.user.uid === b.editor )
+      } else {
+        return false
       }
     }
   })
@@ -109,11 +114,16 @@
   // ログインユーザにお気に入り登録されているデータか
   const isFav = computed( () => {
     return id => {
-      return store.state.user.favList.some( doc => {
-        if ( doc === id ){
-          return true
-        }
-      })
+      if ( store.state.isLogin ) {
+        return store.state.user.favList.some( doc => {
+          if ( doc === id ){
+            return true
+          }
+        })  
+      } else {
+        // ログインしていない場合は, お気に入りボタンは表示しない
+        return null
+      }
     }
   })
 
@@ -121,6 +131,7 @@
   /**
    * animalListItemとAnimalListDetailの切り替え
    */
+
   let detailIndex = ref(0)
   let isDetail = ref(false)
   // 表示するAnimalListDetailを返す
@@ -150,6 +161,29 @@
 
 
   /**
+   * ドキュメントの削除
+   */
+  const deleteDocument = async id => {
+    if ( confirm('削除してもよろしいですか?') ) {
+      let b = animals.value.find(animal => animal.id === id)
+      await deleteObject(fsRef(storage, b.imgURL))
+        .then( () => {
+          deleteDoc(doc(db, 'animals', id))
+        })
+        .catch(error => alert('削除に失敗しました'))
+      
+      animals.value = await getDocuments(animalCollectionRef)
+      if ( animals.value.length === 0 ) {
+        isEmptySetup = true
+      } else {
+        isEmptySetup = false
+        getImages()
+      }
+    }
+  }
+
+
+  /**
    * ドキュメント, 画像を取得
    */
   const getDocuments = query => {
@@ -169,6 +203,7 @@
             isFav: doc.data().isFav,
             isPresent: doc.data().isPresent,
             imgURL: doc.data().imgURL,
+            imgURL_origin: doc.data().imgURL_origin,
             editor: doc.data().editor
           }
           fbAnimals.push(animal)
@@ -190,7 +225,7 @@
             xhr.open('GET', url)
             xhr.send();
 
-            animal.imgURL = url
+            animal.imgURL_origin = url
           }).catch((error) => {
             console.log(error)
         })
@@ -204,7 +239,6 @@
 
   onMounted( async () => {   
     animals.value = await getDocuments(animalCollectionRef)
-    isEmptySetup.value = animals.value.length === 0 ? true : false
     if ( animals.value.length === 0 ) {
       isEmptySetup = true
     } else {
@@ -212,16 +246,10 @@
       getImages()
     }
 
-    if ( store.state.userId ) {
-      userDocRef = doc(db, 'users', store.state.userId )
+    if ( store.state.user.uid ) {
+      userDocRef = doc(db, 'users', store.state.user.uid )
     }
 
-    if ( userDocRef ) {
-      await getDoc( userDocRef )
-        .then(data => {
-          userInfo.value = data.data()
-        })
-    }
   })
 
 

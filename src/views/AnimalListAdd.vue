@@ -5,18 +5,18 @@
     登録フォーム
   </h2>
 
-  <div class="w-4/5 text-center m-auto bg-gray-300 py-3 rounded-xl">
+  <div class="w-4/5 text-center m-auto border-2 border-gray-400 bg-rose-100 py-3 rounded-xl">
 
     <div class="mb-6 p-2">
       <input 
-        class="p-2 rounded-md w-1/2 h-12 focus:bg-yellow-100 focus:ring-[#333]" 
+        class="p-2 rounded-md w-1/2 h-12 border border-[#333] focus:bg-yellow-100 focus:ring-[#333]" 
         type="text" v-model="newAnimalInfo.name" placeholder="お名前">
     </div>
 
     <div class="mb-10">
       <p class="mb-3" v-if="!newAnimalInfo.imgName">※サムネイルとなるペットの画像を選択してください</p>
       <p class="mb-3" v-else>画像が選択されました: {{ newAnimalInfo.imgName }}</p>
-      <label class="block w-1/3 m-auto p-2 rounded-md bg-white text-[#333] hover:bg-yellow-100">
+      <label class="block w-1/3 m-auto p-2 border border-[#333] rounded-md bg-white text-[#333] hover:bg-yellow-100">
         <input type="file" accept=".jpg, .png, .jpeg" 
           @change="getImageFile" class="hidden">ファイルを選択
       </label>
@@ -36,7 +36,7 @@
         class="w-1/4 h-11 p-2 rounded-tr-md border-b-2 focus:bg-yellow-100" 
         list="species" v-model="newAnimalInfo.species" required>
         <option value="">種別</option>
-        <option value="car">ネコ</option>
+        <option value="cat">ネコ</option>
         <option value="dog">イヌ</option>
       </select>
     </div>
@@ -81,14 +81,14 @@
     <div class="mb-4">
       <label for="textlabel" class="block mb-2">詳細</label>
       <textarea  
-        class="p-2 rounded-md w-1/2 focus:bg-yellow-100 focus:ring-2 focus:ring-[#333]" 
+        class="p-2 rounded-md w-1/2 border border-[#333] focus:bg-yellow-100 focus:ring-2 focus:ring-[#333]" 
         id="textlabel" v-model="newAnimalInfo.remarks" rows="4" cols="10" placeholder="例) 活発で甘えん坊だけどお利口さん！"></textarea>
     </div>
 
     <div class="mb-7">
       <label for="charalabel" class="block mb-2">性格</label>
       <input 
-        class="p-2 rounded-md w-1/2" 
+        class="p-2 rounded-md w-1/2 border border-[#333]" 
         type="text" v-model="newAnimalInfo.chara" id="charalabel">
     </div>
 
@@ -101,23 +101,27 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { onMounted, ref  } from "vue";
   import { uuid4 } from "uuid4";
   import TheNormalBtn from "../parts/TheNormalBtn.vue";
   import { useStore } from "vuex";
+  import { useRoute, useRouter } from "vue-router";
 
   /**
    * firebase imports
    */
   import { getStorage, ref as fsRef, uploadBytes } from "firebase/storage";
-  import { collection, addDoc } from "firebase/firestore";
+  import { collection, doc, addDoc, getDoc } from "firebase/firestore";
   import { db } from "../firebase";
 
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
-
+  
 
   const store = useStore()
+  const route = useRoute()
+  const router = useRouter()
+
   // 登録情報を格納
   let newAnimalInfo = ref({
     name: "",
@@ -149,7 +153,7 @@
       isFav: false,
       isPresent: true,
       imgURL: newAnimalInfo.value.imgUrl,
-      editor: store.state.userId,
+      editor: store.state.user.uid,
       date: Date.now()
   });
     newAnimalInfo.value.name = ""
@@ -158,6 +162,10 @@
     newAnimalInfo.value.gender = ""
     newAnimalInfo.value.place = ""
     newAnimalInfo.value.remarks = ""
+    newAnimalInfo.value.imgUrl =  ""
+    newAnimalInfo.value.imgName = ""
+
+    router.push('/list')
   }
 
 
@@ -193,4 +201,24 @@
     });
   }
 
+  onMounted( () => {
+    if ( route.params.id ) {
+      getDoc(doc(db, 'animals', route.params.id))
+        .then(data => {
+          console.log(data);
+
+          newAnimalInfo.value = {
+            name: data.data().name,
+            species: data.data().species,
+            age: data.data().age,
+            gender: data.data().gender,
+            place: data.data().place,
+            chara: ["活発", "好奇心旺盛", "甘えん坊"],
+            remarks: data.data().remarks,
+            imgUrl: data.data().imgURL,
+            imgName: "(画像を変える場合は, 再選択してください)"
+          }         
+        })
+    }
+  })
 </script>

@@ -16,10 +16,14 @@ const mutations = {
     state.user.uid = user.uid
     state.user.chara = user.chara
     state.user.favList = user.favList
+    console.log(state.user);
   },
   signOut( state ) {
     state.isLogin = false
-    state.user = {}
+    state.user.uid = ""
+    state.user.chara = ""
+    state.user.favList = ""
+    console.log(state.user);
   },
   setFavList( state, payload ) {
     if ( payload.isFav ) {
