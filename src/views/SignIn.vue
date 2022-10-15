@@ -40,17 +40,19 @@
       .then (data => {
         console.log("Successfully Signed in!");
         
-        const userDocRef = doc(db, 'users', data.user.uid )
-      
+        const uid = data.user.uid
+        const userDocRef = doc(db, 'users', uid )
         if ( userDocRef ) {
           getDoc( userDocRef )
             .then(data => {
               userInfo.value = data.data()
+              userInfo.value.uid = uid
+              store.dispatch("auth", userInfo.value)
+      
+              // vuexに, ログイン状態とuidを登録
+              router.push("/list")
             })
         }
-        // vuexに, ログイン状態とuidを登録
-        store.dispatch("auth", userInfo.value)
-        router.push("/list")
       })
       .catch (error => {
         console.log(error.code);

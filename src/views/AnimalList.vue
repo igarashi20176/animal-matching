@@ -101,15 +101,15 @@
   const isEditor = computed( () => {
     return idx => {
       if ( store.state.isLogin ) {
-        return ( store.state.userId === animals.value[idx].editor)
+        return ( store.state.user.uid === animals.value[idx].editor)
       }
     }
   })
-
+  
   // ログインユーザにお気に入り登録されているデータか
   const isFav = computed( () => {
     return id => {
-      return userInfo.value.favList.some( doc => {
+      return store.state.user.favList.some( doc => {
         if ( doc === id ){
           return true
         }
@@ -140,14 +140,12 @@
    */
 
   const toggleFav = async ( id, isFav ) => {
-    if ( isFav ) {
-      userInfo.value.favList =  userInfo.value.favList.filter( doc =>  !doc === id )
-    } else {
-      userInfo.value.favList.push(id)
-    }
-    updateDoc( userDocRef , {
-      favList: userInfo.value.favList
-    });
+    await store.dispatch('setFavList', { id: id, isFav: isFav })
+      .then( () => {
+        updateDoc( userDocRef , {
+          favList: store.state.user.favList
+        });
+      })
   }
 
 

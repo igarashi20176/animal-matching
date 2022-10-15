@@ -2,16 +2,16 @@
   <header class="relative w-full flex justify-center items-center bg-[rgb(255,255,255)] p-4 shadow-md">
     <h2 class="font-bold text-xl">{{ title }}</h2>
     <div class="absolute right-3">
-      <router-link class="mr-1" to="/sign-in" v-if="!isLoggedIn">
+      <router-link class="mr-1" :to="{ name: 'sign-in' }" v-if="!isLogin">
         <TheNormalBtn>
           ログイン
         </TheNormalBtn>
       </router-link>
       <the-normal-btn class="mr-2"
-        @click="handleSignOut" v-if="isLoggedIn">
+        @click="handleSignOut" v-if="isLogin">
         サインアウト
       </the-normal-btn>
-      <router-link to="/register">
+      <router-link to="/register" v-if="!isLogin">
         <the-normal-btn>
           新規登録
         </the-normal-btn>
@@ -22,34 +22,31 @@
 </template>
 
 <script setup>
-  import { onMounted, ref } from "vue";
+  import { computed } from "vue";
   import TheNormalBtn from "../parts/TheNormalBtn.vue";
-  import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+  import { getAuth, signOut } from "firebase/auth";
   import { useRouter } from "vue-router";
+  import { useStore } from "vuex";
 
   const router = useRouter()
+  const store = useStore()
 
   defineProps({
     title: String
   })
 
-  let isLoggedIn = ref(false)
+  const isLogin = computed( () => store.state.isLogin )
 
-  let auth
-  onMounted( () => {
-    auth = getAuth()
-    onAuthStateChanged(auth, user => {
-      if ( user ) {
-        isLoggedIn.value  = true 
-      } else {
-        isLoggedIn.value = false
-      }
-    })
-  })
+  
+  /**
+   * Headerが再読み込みされない
+   */
 
   const handleSignOut = () => {
-    signOut(auth).then( () => {
+    signOut(getAuth()).then( () => {
+      store.dispatch('signOut')
       router.push("/list")
     })
   }
+
 </script>

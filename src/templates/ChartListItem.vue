@@ -15,11 +15,8 @@
 </template>
 
 <script setup>
-
 	defineProps({
 		chart: Object
 	})
-
 	const emit = defineEmits([ 'sendAnswer' ])
-
 </script>
