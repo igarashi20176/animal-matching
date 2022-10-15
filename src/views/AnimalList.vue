@@ -2,10 +2,7 @@
 
   <div class="relative" v-if="!isDetail">
 
-    <h2
-      class="font-bold text-center text-3xl width-[2px] py-3 mb-5 border-b-2 border-gray-400">
-      一覧
-    </h2>
+    <h2 class="font-bold text-center text-3xl width-[2px] py-3 mb-5 border-b-2 border-gray-400">一覧</h2>
 
     <div class="flex justify-between">
       <div>
@@ -36,6 +33,7 @@
 
   </div>
 
+  <!-- データの詳細を表示 -->
   <animal-list-detail v-else :animal="currentList" @change-list="changeAnimalDetail" />
 </template>
 
@@ -100,6 +98,7 @@
    */
 
   // ログインユーザーとデータの登録者が一致するか
+  // 一致するユーザは, データの編集・書き込みが可能
   const isEditor = computed( () => {
     return id => {
       if ( store.state.isLogin ) {
@@ -111,7 +110,7 @@
     }
   })
 
-  // ログインユーザにお気に入り登録されているデータか
+  // ログインユーザにお気に入り登録されているデータであるか
   const isFav = computed( () => {
     return id => {
       if ( store.state.isLogin ) {
@@ -140,6 +139,7 @@
   const changeAnimalDetail = id => {
     isDetail.value = !isDetail.value
 
+    // detailからitemListへの移行にはid値を伴わない
     if ( id !== null ) {
       detailIndex.value = animals.value.findIndex(animal => animal.id === id)
     }
@@ -152,27 +152,30 @@
 
   const toggleFav = async ( id, isFav ) => {
     await store.dispatch('setFavList', { id: id, isFav: isFav })
-      .then( () => {
-        updateDoc( userDocRef , {
-          favList: store.state.user.favList
-        });
-      })
+
+    updateDoc( userDocRef , {
+      favList: store.state.user.favList
+    })
   }
 
 
   /**
    * ドキュメントの削除
    */
+
   const deleteDocument = async id => {
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
-      await deleteObject(fsRef(storage, b.imgURL))
-        .then( () => {
-          deleteDoc(doc(db, 'animals', id))
-        })
-        .catch(error => alert('削除に失敗しました'))
+      try {
+        await deleteObject(fsRef(storage, b.imgURL_origin))
+        await deleteDoc(doc(db, 'animals', id))
+      } catch (error) {
+        console.log(error);
+        alert('削除に失敗しました。再度お試しください')
+      }
       
-      animals.value = await getDocuments(animalCollectionRef)
+      // 値の祝に失敗したら空の配列を返す
+      animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
       if ( animals.value.length === 0 ) {
         isEmptySetup = true
       } else {
@@ -184,8 +187,32 @@
 
 
   /**
-   * ドキュメント, 画像を取得
+   * 初期状態のセットアップ
    */
+
+  // 初期データ取得数が0だった場合, 告知  
+  let isEmptySetup = ref(false)
+
+  onMounted( async () => {   
+    animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
+    if ( animals.value.length === 0 ) {
+      isEmptySetup = true
+    } else {
+      isEmptySetup = false
+      getImages()
+    }
+
+    if ( store.state.user.uid ) {
+      userDocRef = doc(db, 'users', store.state.user.uid )
+    }
+  })
+
+
+  /**
+   * 登録されている動物の情報を取得
+   */
+
+  // animalsドキュメントの取得
   const getDocuments = query => {
     return new Promise( function( resolve ) {
       onSnapshot(query, (querySnapshot) => {
@@ -202,7 +229,7 @@
             gender: doc.data().gender,
             isFav: doc.data().isFav,
             isPresent: doc.data().isPresent,
-            imgURL: doc.data().imgURL,
+            imgURL: "",
             imgURL_origin: doc.data().imgURL_origin,
             editor: doc.data().editor
           }
@@ -213,10 +240,11 @@
     })
   }
 
+  // animalsコレクションの中の個々のドキュメントに紐づく画像を取得
   const getImages = () => {
     if ( animals.value.length > 0 ) {
       animals.value.forEach( animal => {
-        getDownloadURL(fsRef(storage, animal.imgURL))
+        getDownloadURL(fsRef(storage, animal.imgURL_origin))
           .then((url) => {const xhr = new XMLHttpRequest()
             xhr.responseType = 'blob'
             xhr.onload = (event) => {
@@ -225,7 +253,7 @@
             xhr.open('GET', url)
             xhr.send();
 
-            animal.imgURL_origin = url
+            animal.imgURL = url
           }).catch((error) => {
             console.log(error)
         })
@@ -234,37 +262,20 @@
   }
 
 
-  // 初期データ取得数が無かった場合
-  let isEmptySetup = ref(false)
-
-  onMounted( async () => {   
-    animals.value = await getDocuments(animalCollectionRef)
-    if ( animals.value.length === 0 ) {
-      isEmptySetup = true
-    } else {
-      isEmptySetup = false
-      getImages()
-    }
-
-    if ( store.state.user.uid ) {
-      userDocRef = doc(db, 'users', store.state.user.uid )
-    }
-
-  })
-
-
   /**
    * Filterによる絞り込み
    */
+
   let isFilter = ref(false) 
-  // フィルター結果に一致するデータが無い場合
+  // フィルター結果に一致するデータが無い場合, 告知
   let isEmptyFilter = ref(false)
 
-  // フィルター機能を持つコンポーネントからのemitsで引数取得
+  // フィルターコンポーネントからフィルター条件を取得
   const getFilteredAnimal = async filters => {
     const fields = Object.keys(filters)
     let q = animalCollectionRef
 
+    // フィルター条件を適用したクエリの生成
     fields.forEach(field => {
       if ( filters[field] !== 'Any' ) {
         filters[field] = StringToBoolean(filters[field])
@@ -272,7 +283,7 @@
       }
     })
 
-    animals.value = await getDocuments(q)
+    animals.value = await getDocuments(q).catch( () => [] )
     if ( animals.value.length === 0 ) {
       isEmptyFilter.value = true
     } else {
@@ -282,13 +293,13 @@
     isFilter.value = !isFilter.value
   }
 
-  const StringToBoolean = string => {
-    if ( string === 'true' ) {
+  const StringToBoolean = value => {
+    if ( value === 'true' ) {
       return true
-    } else if( string === 'false' ) {
+    } else if( value === 'false' ) {
       return false
     } else {
-      return string
+      return value
     }
   }
   
