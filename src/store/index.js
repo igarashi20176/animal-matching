@@ -13,13 +13,20 @@ const state = {
 const mutations = {
   auth( state, user ) {
     state.isLogin = true
-    state.user.uid = user.id
+    state.user.uid = user.uid
     state.user.chara = user.chara
     state.user.favList = user.favList
   },
   signOut( state ) {
     state.isLogin = false
     state.user = {}
+  },
+  setFavList( state, payload ) {
+    if ( payload.isFav ) {
+      state.user.favList = state.user.favList.filter( doc =>  doc !== payload.id )
+    } else {
+      state.user.favList.push(payload.id)
+    }  
   }
 }
 
@@ -29,6 +36,9 @@ const actions = {
   },
   signOut( context ) {
     context.commit('signOut') 
+  },
+  setFavList( context, payload ) {
+    context.commit('setFavList', payload)
   }
 }
 

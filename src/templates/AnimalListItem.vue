@@ -50,6 +50,5 @@
     isEditor: { type: Boolean, default: false }
   })
 
-  console.log(props.isFav);
   const emits = defineEmits([ 'change-detail', 'toggle-fav' ])
 </script>
