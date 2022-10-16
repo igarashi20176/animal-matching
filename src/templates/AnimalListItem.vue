@@ -1,6 +1,6 @@
 <template>
 
-  <a 
+  <a v-if="isFilter"
     class="block cursor-pointer shadow-under hover:shadow-natural relative p-2 border-2 rounded-3xl border-gray-400 bg-lime-50 transition hover:translate-y-[1px]"
     @click.stop="emits('change-detail', props.animal.id)">
 
@@ -49,16 +49,29 @@
 </template>
 
 <script setup>
+  import { computed } from "vue";
   import TheFavBtn from "../parts/TheFavBtn.vue";
   import { useRouter } from "vue-router";
 
   const props = defineProps({
     animal: Object,
     isFav: [ Boolean, null ],
+    isFavFilter: { type: Boolean, default: false },
     isEditor: { type: Boolean, default: false }
   })
 
   const router = useRouter()
+
+  
+  const isFilter = computed( () => {
+    // お気に入りのみの絞り込みであるとき, 表示/非表示を判定
+    if ( props.isFavFilter ) {
+      return props.isFav
+    } else {
+      // お気に入りの絞り込みではないとき, すべて表示
+      return true
+    }
+  })
 
   const emits = defineEmits([ 'change-detail', 'toggle-fav', 'delete-doc' ])
 </script>

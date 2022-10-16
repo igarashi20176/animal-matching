@@ -4,20 +4,28 @@
 
     <h2 class="font-bold text-center text-3xl width-[2px] py-3 mb-5 border-b-2 border-gray-400">一覧</h2>
 
-    <div class="flex justify-between">
+    <div class="flex justify-between items-center">
+      
+      <div v-if="!isEmptySetup && !isEmptyFilter && store.state.isLogin"
+        class="bg-yellow-200 p-2 rounded-2xl">
+        <p>お気に入りのみ表示</p>  
+        <the-toggle-btn  @change=" checked => isFavFilter = checked " />
+      </div>
+
       <div>
         <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
         <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
       </div>
 
       <!-- フィルター機能 -->
-      <the-normal-btn  @click="isFilter = !isFilter">
+      <the-normal-btn 
+        @click="isFilter = !isFilter">
         フィルター機能
       </the-normal-btn>
 
       <div class="absolute z-10 right-[19%] top-[7%]">
-        <the-radio-btn-col3 v-if="isFilter" 
-          :btn-a="filterBtns[0]" :btn-b="filterBtns[1]" :btn-c="filterBtns[2]"
+        <the-filter-radio-btn v-if="isFilter" 
+          :btn-a="filterBtns[0]" :btn-b="filterBtns[1]"
           @get-filtered="getFilteredAnimal" />
       </div>
     </div>
@@ -26,7 +34,8 @@
     <!-- 動物のリストを表示 -->
     <ul v-for="animal in animals">
       <li :key="animal.id" class="m-6">
-        <animal-list-item :is-editor="isEditor(animal.id)" :is-fav="isFav(animal.id)" :animal="animal" 
+        <animal-list-item :animal="animal"
+          :is-editor="isEditor(animal.id)" :is-fav="isFav(animal.id)" :is-fav-filter="isFavFilter"  
           @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" @delete-doc="deleteDocument" />
       </li>
     </ul>
@@ -42,8 +51,9 @@
   import { useStore } from "vuex";
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
-  import TheRadioBtnCol3 from "../templates/TheRadioBtnCol3.vue";
+  import TheFilterRadioBtn from "../templates/TheFilterRadioBtn.vue";
   import TheNormalBtn from "../parts/TheNormalBtn.vue";
+  import TheToggleBtn from "../parts/TheToggleBtn.vue";
   
   /**
    * firebase import
@@ -83,13 +93,6 @@
       labelNameA: "オス",
       labelNameB: "メス" 
     },
-    {
-      field: "isFav",
-      valueA: "true",
-      valueB: "false", 
-      labelNameA: "お気に入りのみ",
-      labelNameB: "お気に入り以外" 
-    }
   ]
 
   
@@ -268,7 +271,10 @@
    * Filterによる絞り込み
    */
 
-  let isFilter = ref(false) 
+  // フィルターコンポーネントを表示/非表示
+  let isFilter = ref(false)
+  // お気に入りのみの絞り込みを適用/非適用 
+  let isFavFilter = ref(false)
   // フィルター結果に一致するデータが無い場合, 告知
   let isEmptyFilter = ref(false)
 
