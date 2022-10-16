@@ -99,9 +99,10 @@
 <script setup>
   import { onMounted, ref  } from "vue";
   import { uuid4 } from "uuid4";
-  import TheNormalBtn from "../parts/TheNormalBtn.vue";
   import { useStore } from "vuex";
   import { useRoute, useRouter } from "vue-router";
+  import TheNormalBtn from "../parts/TheNormalBtn.vue";
+
 
   /**
    * firebase imports
@@ -110,6 +111,9 @@
   import { collection, doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
   import { db } from "../firebase";
 
+  /**
+   * firebase ref
+   */
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
   
@@ -135,7 +139,7 @@
    *  Editする場合, 既存のデータを反映
    */
 
-   onMounted( () => {
+  onMounted( () => {
     if ( route.params.id ) {
       getDoc(doc(db, 'animals', route.params.id))
         .then(data => {
@@ -171,6 +175,7 @@
 
     // 新規登録の場合
     if ( !newAnimalInfo.value.editor ) {
+
       const addDocAwait = 
         await addDoc(animalCollectionRef, {
           name: newAnimalInfo.value.name,
@@ -193,8 +198,7 @@
           console.log("画像をアップロード", snapshot)
         })
 
-      Promise.all( [ addDocAwait, addImgAwait ] )
-        .then( () => {
+      Promise.all( [ addDocAwait, addImgAwait ] ).then( () => {
           router.push('/list')
         }).catch ( () => {
           alert("アイテムの送信に失敗しました。再度やり直してください")
@@ -202,7 +206,10 @@
 
     // Editの場合
     } else {
-      try { 
+
+      let promiseAry = []
+
+      const updateDocAwait = 
         await updateDoc(doc(db, 'animals', route.params.id), {
           name: newAnimalInfo.value.name,
           species: newAnimalInfo.value.species,
@@ -215,26 +222,31 @@
           imgURL: ""
         })
 
-        // 画像を変更した場合
-        if ( imageFileInfo.value.imgName !== "画像を変える場合は, 再選択してください" ) {
+      // 画像を変更した場合
+      if ( imageFileInfo.value.imgName !== "画像を変える場合は, 再選択してください" ) {
 
-          // 参照エラーで実行できない。同じ環境でAnimalListの方では実行できる...
-          // await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_origin_copy))
+        // 参照エラーで実行できない。同じ環境でAnimalListの方では実行できる...
+        // await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_origin_copy))
 
+        const updateDocAwait =  
           await updateDoc(doc(db, 'animals', route.params.id), {
             imgURL_origin: imageFileInfo.value.imgURL_origin
           })
 
+        const uploadImageAwait = 
           await uploadBytes(imageFileInfo.value.storageRef, imageFileInfo.value.file).then((snapshot) => {
             console.log("画像をアップロード", snapshot)
           })
-        }
 
-        router.push('/list')
-      } catch (error) {
-        console.log(error);
-        alert('送信に失敗しました。再度やり直してください')
+          promiseAry = [ updateDocAwait, uploadImageAwait ]
       }
+
+      Promise.all( [ updateDocAwait, ...promiseAry ] )
+        .then( () => {
+          router.push('/list')
+        }).catch( () => {
+          alert('送信に失敗しました。再度お試しください。')
+        })
     }
   }
 

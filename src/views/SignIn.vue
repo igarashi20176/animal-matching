@@ -42,6 +42,7 @@
         
         const uid = data.user.uid
         const userDocRef = doc(db, 'users', uid )
+        
         getDoc( userDocRef )
           .then(data => {
             userInfo.value = data.data()

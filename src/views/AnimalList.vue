@@ -58,7 +58,7 @@
   /**
    * firebase import
    */
-  import { collection, doc, getDoc,
+  import { collection, doc,
     deleteDoc, updateDoc, onSnapshot,
     query, where 
   } from "firebase/firestore";
@@ -130,91 +130,9 @@
   })
 
 
+  
   /**
-   * animalListItemとAnimalListDetailの切り替え
-   */
-
-  let detailIndex = ref(0)
-  let isDetail = ref(false)
-  // 表示するAnimalListDetailを返す
-  const currentList = computed( () => animals.value[detailIndex.value] )
-
-  const changeAnimalDetail = id => {
-    isDetail.value = !isDetail.value
-
-    // detailからitemListへの移行にはid値を伴わない
-    if ( id !== null ) {
-      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
-    }
-  }  
-
-
-  /**
-   * お気に入りの着け外し
-   */
-
-  const toggleFav = async ( id, isFav ) => {
-    await store.dispatch('setFavList', { id: id, isFav: isFav })
-
-    updateDoc( userDocRef , {
-      favList: store.state.user.favList
-    })
-  }
-
-
-  /**
-   * ドキュメントの削除
-   */
-
-  const deleteDocument = async id => {
-    if ( confirm('削除してもよろしいですか?') ) {
-      let b = animals.value.find(animal => animal.id === id)
-      try {
-        console.log(storage);
-        console.log(fsRef(storage, b.imgURL_origin));
-        await deleteObject(fsRef(storage, b.imgURL_origin))
-        await deleteDoc(doc(db, 'animals', id))
-      } catch (error) {
-        console.log(error);
-        alert('削除に失敗しました。再度お試しください')
-      }
-      
-      // 値の祝に失敗したら空の配列を返す
-      animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
-      if ( animals.value.length === 0 ) {
-        isEmptySetup = true
-      } else {
-        isEmptySetup = false
-        getImages()
-      }
-    }
-  }
-
-
-  /**
-   * 初期状態のセットアップ
-   */
-
-  // 初期データ取得数が0だった場合, 告知  
-  let isEmptySetup = ref(false)
-
-  onMounted( async () => {   
-    animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
-    if ( animals.value.length === 0 ) {
-      isEmptySetup = true
-    } else {
-      isEmptySetup = false
-      getImages()
-    }
-
-    if ( store.state.user.uid ) {
-      userDocRef = doc(db, 'users', store.state.user.uid )
-    }
-  })
-
-
-  /**
-   * 登録されている動物の情報を取得
+   * methods
    */
 
   // animalsドキュメントの取得
@@ -246,7 +164,7 @@
   }
 
   // animalsコレクションの中の個々のドキュメントに紐づく画像を取得
-  const getImages = () => {
+  const getImages = async () => {
     if ( animals.value.length > 0 ) {
       animals.value.forEach( animal => {
         getDownloadURL(fsRef(storage, animal.imgURL_origin))
@@ -265,6 +183,77 @@
       })
     }
   }
+
+  
+  // animalListItemとAnimalListDetailの切り替え
+  let detailIndex = ref(0)
+  let isDetail = ref(false)
+  // 表示するAnimalListDetailを返す
+  const currentList = computed( () => animals.value[detailIndex.value] )
+
+  const changeAnimalDetail = id => {
+    isDetail.value = !isDetail.value
+
+    // detailからitemListへの移行にはid値を伴わない
+    if ( id !== null ) {
+      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
+    }
+  }  
+
+
+  // お気に入りの着け外し
+  const toggleFav = async ( id, isFav ) => {
+    await store.dispatch('setFavList', { id: id, isFav: isFav })
+
+    await updateDoc( userDocRef , {
+      favList: store.state.user.favList
+    }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
+  }
+
+
+  // ドキュメントの削除
+  const deleteDocument = async id => {
+    if ( confirm('削除してもよろしいですか?') ) {
+      let b = animals.value.find(animal => animal.id === id)
+
+      const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL_origin))
+      const deleteDocAwait = await deleteDoc(doc(db, 'animals', id))
+
+      Promise.all( [ deleteDocAwait, deleteObjectAwait ] )
+        .catch( () => alert('削除に失敗しました。再度お試しください')  )
+      
+      // 値の祝に失敗したら空の配列を返す
+      animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
+      if ( animals.value.length === 0 ) {
+        isEmptySetup = true
+      } else {
+        isEmptySetup = false
+        await getImages().catch( () => alert('画像の取得に失敗しました') )
+      }
+    }
+  }
+
+
+  /**
+   * 初期状態のセットアップ
+   */
+
+  // 初期データ取得数が0だった場合, 告知  
+  let isEmptySetup = ref(false)
+
+  onMounted( async () => {   
+    animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
+    if ( animals.value.length === 0 ) {
+      isEmptySetup = true
+    } else {
+      isEmptySetup = false
+      await getImages().catch( () => alert('画像の取得に失敗しました') )
+    }
+
+    if ( store.state.user.uid ) {
+      userDocRef = doc(db, 'users', store.state.user.uid )
+    }
+  })
 
 
   /**
@@ -296,7 +285,7 @@
       isEmptyFilter.value = true
     } else {
       isEmptyFilter.value = false 
-      getImages()
+      await getImages().catch( () => alert('画像の取得に失敗しました') )
     }
     isFilter.value = !isFilter.value
   }

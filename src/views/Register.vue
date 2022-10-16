@@ -24,6 +24,7 @@
   let email = ref("")
   let password = ref("")
 
+  
   const register = () => {
     createUserWithEmailAndPassword(getAuth(), email.value, password.value)
       .then (data => {
