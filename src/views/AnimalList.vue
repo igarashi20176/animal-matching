@@ -9,7 +9,8 @@
       <div v-if="!emptyMsg && store.state.isLogin"
         class="bg-yellow-200 p-2 rounded-2xl">
         <p>お気に入りのみ表示</p>  
-        <the-toggle-btn  @change=" checked => isFavFilter = checked " />
+        <the-toggle-btn  v-model:value="isFavFilter"  />
+        <!-- <the-toggle-btn  :value="isFavFilter" @update:value="isFavFilter = $event"  /> -->
       </div>
 
       <div>
@@ -74,8 +75,12 @@
   let userDocRef = null
 
 
+  const num = ref("")
+
   const store = useStore()
   const route = useRoute()
+
+  let number = ref(0)
 
   // 
   // 動物のリスト
@@ -253,7 +258,7 @@
         await getImages().catch( () => alert('画像の取得に失敗しました') )
       }
 
-      if ( store.state.user.uid ) {
+      if ( store.state.isLogin ) {
         userDocRef = doc(db, 'users', store.state.user.uid )
       }
     }
