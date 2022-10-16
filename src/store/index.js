@@ -13,19 +13,17 @@ const state = {
 const mutations = {
   auth( state, user ) {
     state.isLogin = true
-<<<<<<< HEAD
-    state.user.uid = user.id
-=======
     state.user.uid = user.uid
->>>>>>> addFirebase
     state.user.chara = user.chara
     state.user.favList = user.favList
+    console.log(state.user);
   },
   signOut( state ) {
     state.isLogin = false
     state.user = {}
-<<<<<<< HEAD
-=======
+    state.user.uid = ""
+    state.user.chara = ""
+    state.user.favList = ""
   },
   setFavList( state, payload ) {
     if ( payload.isFav ) {
@@ -33,7 +31,6 @@ const mutations = {
     } else {
       state.user.favList.push(payload.id)
     }  
->>>>>>> addFirebase
   }
 }
 
@@ -43,12 +40,9 @@ const actions = {
   },
   signOut( context ) {
     context.commit('signOut') 
-<<<<<<< HEAD
-=======
   },
   setFavList( context, payload ) {
     context.commit('setFavList', payload)
->>>>>>> addFirebase
   }
 }
 

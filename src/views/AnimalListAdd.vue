@@ -1,27 +1,23 @@
 <template>
 
-  <h2
-    class="font-bold text-center text-3xl py-3 mb-10 border-b-2 border-gray-400">
-    登録フォーム
-  </h2>
+  <h2 class="font-bold text-center text-3xl py-3 mb-10 border-b-2 border-gray-400">登録フォーム</h2>
 
-  <div class="w-4/5 text-center m-auto bg-gray-300 py-3 rounded-xl">
+  <div class="w-4/5 text-center m-auto border-2 border-gray-400 bg-rose-100 py-3 rounded-xl">
 
     <div class="mb-6 p-2">
       <input 
-        class="p-2 rounded-md w-1/2 h-12 focus:bg-yellow-100 focus:ring-[#333]" 
+        class="p-2 rounded-md w-1/2 h-12 border border-[#333] focus:bg-yellow-100 focus:ring-[#333]" 
         type="text" v-model="newAnimalInfo.name" placeholder="お名前">
     </div>
 
     <div class="mb-10">
-      <p class="mb-3" v-if="!newAnimalInfo.imgName">※サムネイルとなるペットの画像を選択してください</p>
-      <p class="mb-3" v-else>画像が選択されました: {{ newAnimalInfo.imgName }}</p>
-      <label class="block w-1/3 m-auto p-2 rounded-md bg-white text-[#333] hover:bg-yellow-100">
+      <p class="mb-3" v-if="!imageFileInfo.imgName">※サムネイルとなるペットの画像を選択してください</p>
+      <p class="mb-3" v-else>画像が選択されました: {{ imageFileInfo.imgName }}</p>
+      <label class="block w-1/3 m-auto p-2 border border-[#333] rounded-md bg-white text-[#333] hover:bg-yellow-100">
         <input type="file" accept=".jpg, .png, .jpeg" 
           @change="getImageFile" class="hidden">ファイルを選択
       </label>
     </div>
-    
 
     <div class="flex justify-center">
       <select 
@@ -36,7 +32,7 @@
         class="w-1/4 h-11 p-2 rounded-tr-md border-b-2 focus:bg-yellow-100" 
         list="species" v-model="newAnimalInfo.species" required>
         <option value="">種別</option>
-        <option value="car">ネコ</option>
+        <option value="cat">ネコ</option>
         <option value="dog">イヌ</option>
       </select>
     </div>
@@ -81,14 +77,14 @@
     <div class="mb-4">
       <label for="textlabel" class="block mb-2">詳細</label>
       <textarea  
-        class="p-2 rounded-md w-1/2 focus:bg-yellow-100 focus:ring-2 focus:ring-[#333]" 
+        class="p-2 rounded-md w-1/2 border border-[#333] focus:bg-yellow-100 focus:ring-2 focus:ring-[#333]" 
         id="textlabel" v-model="newAnimalInfo.remarks" rows="4" cols="10" placeholder="例) 活発で甘えん坊だけどお利口さん！"></textarea>
     </div>
 
     <div class="mb-7">
       <label for="charalabel" class="block mb-2">性格</label>
       <input 
-        class="p-2 rounded-md w-1/2" 
+        class="p-2 rounded-md w-1/2 border border-[#333]" 
         type="text" v-model="newAnimalInfo.chara" id="charalabel">
     </div>
 
@@ -101,23 +97,31 @@
 </template>
 
 <script setup>
-  import { ref } from "vue";
+  import { onMounted, ref  } from "vue";
   import { uuid4 } from "uuid4";
-  import TheNormalBtn from "../parts/TheNormalBtn.vue";
   import { useStore } from "vuex";
+  import { useRoute, useRouter } from "vue-router";
+  import TheNormalBtn from "../parts/TheNormalBtn.vue";
+
 
   /**
    * firebase imports
    */
-  import { getStorage, ref as fsRef, uploadBytes } from "firebase/storage";
-  import { collection, addDoc } from "firebase/firestore";
+  import { getStorage, deleteObject, ref as fsRef, uploadBytes } from "firebase/storage";
+  import { collection, doc, addDoc, getDoc, updateDoc } from "firebase/firestore";
   import { db } from "../firebase";
 
+  /**
+   * firebase ref
+   */
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
-
+  
 
   const store = useStore()
+  const route = useRoute()  
+  const router = useRouter()
+
   // 登録情報を格納
   let newAnimalInfo = ref({
     name: "",
@@ -127,8 +131,39 @@
     place: "",
     chara: ["活発", "好奇心旺盛", "甘えん坊"],
     remarks: "",
-    imgUrl: "",
-    imgName: ""
+    editor: ""
+  })
+
+
+  /**
+   *  Editする場合, 既存のデータを反映
+   */
+
+  onMounted( () => {
+    if ( route.params.id ) {
+      getDoc(doc(db, 'animals', route.params.id))
+        .then(data => {
+          newAnimalInfo.value = {
+            name: data.data().name,
+            species: data.data().species,
+            age: data.data().age,
+            gender: data.data().gender,
+            place: data.data().place,
+            chara: ["活発", "好奇心旺盛", "甘えん坊"],
+            remarks: data.data().remarks,
+            editor: data.data().editor
+          }
+          
+          imageFileInfo.value = {
+            imgName: "画像を変える場合は, 再選択してください",
+            imgUrl_origin_copy: data.data().imgURL_origin,
+          }
+
+        }).catch(() => {
+          alert('データの取得に失敗しました')
+          router.push('/list')
+        })
+    }
   })
 
 
@@ -136,61 +171,114 @@
    * Firebaseに情報を登録
    */
   const addAnimal = async () => {
-    uploadImageFile()
-  
-    addDoc(animalCollectionRef, {
-      name: newAnimalInfo.value.name,
-      species: newAnimalInfo.value.species,
-      age: Number(newAnimalInfo.value.age),
-      gender: newAnimalInfo.value.gender,
-      place: newAnimalInfo.value.place,
-      chara: newAnimalInfo.value.chara,
-      remarks: newAnimalInfo.value.remarks,
-      isFav: false,
-      isPresent: true,
-      imgURL: newAnimalInfo.value.imgUrl,
-      editor: store.state.userId,
-      date: Date.now()
-  });
-    newAnimalInfo.value.name = ""
-    newAnimalInfo.value.species = ""
-    newAnimalInfo.value.age = ""
-    newAnimalInfo.value.gender = ""
-    newAnimalInfo.value.place = ""
-    newAnimalInfo.value.remarks = ""
+    // Editの場合と, 新規登録の場合とで分岐
+
+    // 新規登録の場合
+    if ( !newAnimalInfo.value.editor ) {
+
+      const addDocAwait = 
+        await addDoc(animalCollectionRef, {
+          name: newAnimalInfo.value.name,
+          species: newAnimalInfo.value.species,
+          age: Number(newAnimalInfo.value.age),
+          gender: newAnimalInfo.value.gender,
+          place: newAnimalInfo.value.place,
+          chara: newAnimalInfo.value.chara,
+          remarks: newAnimalInfo.value.remarks,
+          isPresent: true,
+          // imgURL...imgURL_originの変換後のURLが格納
+          imgURL: "",
+          imgURL_origin: imageFileInfo.value.imgURL_origin,
+          editor: store.state.user.uid,
+          date: Date.now()
+        });
+      
+      const addImgAwait = 
+        await uploadBytes(imageFileInfo.value.storageRef, imageFileInfo.value.file).then((snapshot) => {
+          console.log("画像をアップロード", snapshot)
+        })
+
+      Promise.all( [ addDocAwait, addImgAwait ] ).then( () => {
+          router.push('/list')
+        }).catch ( () => {
+          alert("アイテムの送信に失敗しました。再度やり直してください")
+        })
+
+    // Editの場合
+    } else {
+
+      let promiseAry = []
+
+      const updateDocAwait = 
+        await updateDoc(doc(db, 'animals', route.params.id), {
+          name: newAnimalInfo.value.name,
+          species: newAnimalInfo.value.species,
+          age: Number(newAnimalInfo.value.age),
+          gender: newAnimalInfo.value.gender,
+          place: newAnimalInfo.value.place,
+          chara: newAnimalInfo.value.chara,
+          remarks: newAnimalInfo.value.remarks,
+          isPresent: true,
+          imgURL: ""
+        })
+
+      // 画像を変更した場合
+      if ( imageFileInfo.value.imgName !== "画像を変える場合は, 再選択してください" ) {
+
+        // 参照エラーで実行できない。同じ環境でAnimalListの方では実行できる...
+        // await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_origin_copy))
+
+        const updateDocAwait =  
+          await updateDoc(doc(db, 'animals', route.params.id), {
+            imgURL_origin: imageFileInfo.value.imgURL_origin
+          })
+
+        const uploadImageAwait = 
+          await uploadBytes(imageFileInfo.value.storageRef, imageFileInfo.value.file).then((snapshot) => {
+            console.log("画像をアップロード", snapshot)
+          })
+
+          promiseAry = [ updateDocAwait, uploadImageAwait ]
+      }
+
+      Promise.all( [ updateDocAwait, ...promiseAry ] )
+        .then( () => {
+          router.push('/list')
+        }).catch( () => {
+          alert('送信に失敗しました。再度お試しください。')
+        })
+    }
   }
 
 
   /**
-   * イメージ画像を取得・アップロード
+   * 画像を取得・画像の保存
    */
+
   let imageFileInfo = ref({
     file: {},
-    uuidFileName: ""
+    storageRef: {},
+    uuidFileName: "",
+    // imgURL_origin...storageに保存されている画像にアクセスするためのURL
+    imgURL_origin: "",
+    imgURL_origin_copy: "",
+    imgName: ""
   })
 
-  // inputで画像を選択した時に発火
   const FOLDER_NAME = "images"
-  
+
+  // inputで画像を選択した時に発火
   const getImageFile = props => {
     const file = props.target.files[0]
     imageFileInfo.value.file = file
     // 画像が選択された事を表示する
-    newAnimalInfo.value.imgName = file.name
-    // storage内のフォルダ/ファイル名
+    imageFileInfo.value.imgName = file.name
+    // storage内のフォルダ名/ファイル名
     imageFileInfo.value.uuidFileName = `${FOLDER_NAME}/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
+
+    imageFileInfo.value.storageRef = fsRef(storage, imageFileInfo.value.uuidFileName);
+
+    imageFileInfo.value.imgURL_origin = `gs://${imageFileInfo.value.storageRef.bucket}/${imageFileInfo.value.uuidFileName}`;
   } 
-
-  const uploadImageFile = () => {
-    const storageRef = fsRef(storage, imageFileInfo.value.uuidFileName);
-
-    // firestoreの情報にstorageの画像のURLを結びつける
-    newAnimalInfo.value.imgUrl = `gs://${storageRef.bucket}/${imageFileInfo.value.uuidFileName}`;
-
-    // Firebaseにデータを適切に送るために必要なコード
-    uploadBytes(storageRef, imageFileInfo.value.file).then((snapshot) => {
-      console.log("画像をアップロード", snapshot);
-    });
-  }
 
 </script>

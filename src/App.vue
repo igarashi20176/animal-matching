@@ -1,5 +1,5 @@
 <template>
-  <the-header :title="title" />
+  <the-header />
 
   <the-routing-btn-col3 :btn-a="routingBtns[0]" :btn-b="routingBtns[1]" :btn-c="routingBtns[2]" />
 
@@ -16,8 +16,6 @@
 import TheHeader from './parts/TheHeader.vue';
 import TheFooter from './parts/TheFooter.vue';
 import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
-
-const title = "あにまるまっちんぐ"
 
 const routingBtns = [
   {

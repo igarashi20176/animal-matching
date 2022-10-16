@@ -16,7 +16,7 @@ const routes = [
         component: AnimalList
     },
     {
-        path: '/add',
+        path: '/add:id?',
         name: 'add',
         component: Add,
         meta: {
@@ -33,11 +33,6 @@ const routes = [
         name: "sign-in",
         component: () => import("../views/SignIn.vue")
     },
-    // {
-    //     path: '/edit/:id',
-    //     name: 'edit',
-    //     component: Edit
-    // },
     {
         path: '/*',
         redirect: '/list'

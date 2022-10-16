@@ -23,16 +23,6 @@
         <label for="radio-D-label" class="p-1 w-[120px] border border-[#333] cursor-pointer block rounded-xl text-md hover:bg-neutral-50 peer-checked:bg-white">{{ props.btnB.labelNameB }}</label>
       </li>
     </ul>
-    <ul class="flex justify-center gap-x-5 mt-4 text-slate-700">
-      <li>
-        <input type="radio" name="isFav" v-model="filters[props.btnC.field]" id="radio-E-label" :value="props.btnC.valueA" class="hidden peer">
-        <label for="radio-E-label" class="p-1 w-[120px] border border-[#333] cursor-pointer block rounded-xl text-md hover:bg-neutral-50 peer-checked:bg-white">{{ props.btnC.labelNameA }}</label>
-      </li>
-      <li>
-        <input type="radio" name="isFav" v-model="filters[props.btnC.field]" id="radio-F-label" :value="props.btnC.valueB" class="hidden peer">
-        <label for="radio-F-label" class="p-1 w-[120px] border border-[#333] cursor-pointer block rounded-xl text-md hover:bg-neutral-50 peer-checked:bg-white">{{ props.btnC.labelNameB }}</label>
-      </li>
-    </ul>
     <div class="flex justify-center gap-x-7">
       <button class="p-1 mt-5 border bg-red-300 hover:bg-red-400 border-[#333] rounded-xl transition" @click="resetFilters">リセット</button>
       <button class="p-1 mt-5 border bg-blue-300 hover:bg-blue-400 border-[#333] rounded-xl transition" @click="emits('get-filtered', filters)">フィルタリングをする</button>
@@ -46,7 +36,6 @@
   const props = defineProps({
     btnA: { type: Object, default: { field: "fieldA", valueA: "A", valueB: "B", labelNameA: "ラベルA", labelNameB: "ラベルB" } },
     btnB: { type: Object, default: { field: "fieldB", valueA: "A", valueB: "B", labelNameA: "ラベルA", labelNameB: "ラベルB" } },
-    btnC: { type: Object, default: { field: "fieldC", valueA: "A", valueB: "B", labelNameA: "ラベルA", labelNameB: "ラベルB" } }
   })
 
   const emits = defineEmits( ['get-filtered'] )
@@ -54,13 +43,11 @@
   let filters = ref({
     [props.btnA.field]: "Any", 
     [props.btnB.field]: "Any", 
-    [props.btnC.field]: "Any" 
   })
 
   const resetFilters = () => {
     filters.value[props.btnA.field] = 'Any'
     filters.value[props.btnB.field] = 'Any'
-    filters.value[props.btnC.field] = 'Any'
   }
  
   onMounted( () => resetFilters() )
