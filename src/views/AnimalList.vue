@@ -167,6 +167,8 @@
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
       try {
+        console.log(storage);
+        console.log(fsRef(storage, b.imgURL_origin));
         await deleteObject(fsRef(storage, b.imgURL_origin))
         await deleteDoc(doc(db, 'animals', id))
       } catch (error) {
