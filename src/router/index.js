@@ -1,17 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Chart from '../views/ChartList.vue'
+import Matching from '../views/Matching.vue'
 import AnimalList from "../views/AnimalList.vue";
 import Add from "../views/AnimalListAdd.vue";
 import Store from "../store";
 
 const routes = [
     {
-        path: '/chart',
-        name: 'chart',
-        component: Chart,
+        path: '/matching',
+        name: 'matching',
+        component: Matching,
     },
     {
-        path: '/list',
+        path: '/list:chara?',
         name: 'list',
         component: AnimalList
     },

@@ -13,14 +13,14 @@
 </template>
 
 <script setup>
-import TheHeader from './parts/TheHeader.vue';
+import TheHeader from './templates/TheHeader.vue';
 import TheFooter from './parts/TheFooter.vue';
 import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
 
 const routingBtns = [
   {
     tag: "診断",
-    path: "/chart"
+    path: "/matching"
   },
   {
     tag: "一覧",

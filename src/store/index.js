@@ -16,7 +16,6 @@ const mutations = {
     state.user.uid = user.uid
     state.user.chara = user.chara
     state.user.favList = user.favList
-    console.log(state.user);
   },
   signOut( state ) {
     state.isLogin = false
@@ -31,19 +30,13 @@ const mutations = {
     } else {
       state.user.favList.push(payload.id)
     }  
+  },
+  setChara( state, chara ) {
+    state.user.chara = chara
   }
 }
 
 const actions = {
-  auth ( context, user ) {
-    context.commit('auth', user)
-  },
-  signOut( context ) {
-    context.commit('signOut') 
-  },
-  setFavList( context, payload ) {
-    context.commit('setFavList', payload)
-  }
 }
 
 export default createStore({

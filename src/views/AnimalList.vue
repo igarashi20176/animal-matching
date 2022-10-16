@@ -6,15 +6,14 @@
 
     <div class="flex justify-between items-center">
       
-      <div v-if="!isEmptySetup && !isEmptyFilter && store.state.isLogin"
+      <div v-if="!emptyMsg && store.state.isLogin"
         class="bg-yellow-200 p-2 rounded-2xl">
         <p>お気に入りのみ表示</p>  
         <the-toggle-btn  @change=" checked => isFavFilter = checked " />
       </div>
 
       <div>
-        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
-        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="emptyMsg">{{ emptyMsg }}</p>
       </div>
 
       <!-- フィルター機能 -->
@@ -49,6 +48,7 @@
 <script setup>
   import { computed, onMounted, ref } from "vue"
   import { useStore } from "vuex";
+  import { useRoute } from "vue-router";
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   import TheFilterRadioBtn from "../templates/TheFilterRadioBtn.vue";
@@ -60,7 +60,7 @@
    */
   import { collection, doc,
     deleteDoc, updateDoc, onSnapshot,
-    query, where 
+    query, where, snapshotEqual 
   } from "firebase/firestore";
   import { db } from "../firebase";
   import { getStorage, deleteObject, ref as fsRef ,getDownloadURL } from "firebase/storage";
@@ -75,6 +75,9 @@
 
 
   const store = useStore()
+  const route = useRoute()
+
+  // 
   // 動物のリスト
   let animals = ref([])
   // フィルターのボタン
@@ -95,7 +98,8 @@
     },
   ]
 
-  
+  const chara = route.params.chara ? route.params.chara : "" 
+
   /**
    * computed
    */
@@ -132,7 +136,7 @@
 
   
   /**
-   * methods
+   * firestoreに対する処理
    */
 
   // animalsドキュメントの取得
@@ -184,26 +188,10 @@
     }
   }
 
-  
-  // animalListItemとAnimalListDetailの切り替え
-  let detailIndex = ref(0)
-  let isDetail = ref(false)
-  // 表示するAnimalListDetailを返す
-  const currentList = computed( () => animals.value[detailIndex.value] )
-
-  const changeAnimalDetail = id => {
-    isDetail.value = !isDetail.value
-
-    // detailからitemListへの移行にはid値を伴わない
-    if ( id !== null ) {
-      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
-    }
-  }  
-
 
   // お気に入りの着け外し
   const toggleFav = async ( id, isFav ) => {
-    await store.dispatch('setFavList', { id: id, isFav: isFav })
+    store.commit('setFavList', { id: id, isFav: isFav })
 
     await updateDoc( userDocRef , {
       favList: store.state.user.favList
@@ -225,9 +213,9 @@
       // 値の祝に失敗したら空の配列を返す
       animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
       if ( animals.value.length === 0 ) {
-        isEmptySetup = true
+        emptyMsg.value = 'データが取得できませんでした。'
       } else {
-        isEmptySetup = false
+        emptyMsg.value = ''
         await getImages().catch( () => alert('画像の取得に失敗しました') )
       }
     }
@@ -239,21 +227,56 @@
    */
 
   // 初期データ取得数が0だった場合, 告知  
-  let isEmptySetup = ref(false)
+  let emptyMsg = ref("")
 
+  
   onMounted( async () => {   
-    animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
-    if ( animals.value.length === 0 ) {
-      isEmptySetup = true
-    } else {
-      isEmptySetup = false
-      await getImages().catch( () => alert('画像の取得に失敗しました') )
-    }
+    // Matchingコンポーネントからparamsが送られてきた場合
+    if ( chara ) {
+      let q = animalCollectionRef
+      // q = query(q, where('chara', 'array-contains', chara))
 
-    if ( store.state.user.uid ) {
-      userDocRef = doc(db, 'users', store.state.user.uid )
+      animals.value = await getDocuments(q).catch( () => [] )
+      if ( animals.value.length === 0 ) {
+        emptyMsg.value = 'データが取得できませんでした'
+      } else {
+        emptyMsg.value = ''
+        await getImages().catch( () => alert('画像の取得に失敗しました') )
+      }
+
+    } else {
+      animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
+      if ( animals.value.length === 0 ) {
+        emptyMsg.value = 'データが取得できませんでした'
+      } else {
+        emptyMsg.value = ''
+        await getImages().catch( () => alert('画像の取得に失敗しました') )
+      }
+
+      if ( store.state.user.uid ) {
+        userDocRef = doc(db, 'users', store.state.user.uid )
+      }
     }
   })
+
+
+  /**
+   * animalListItemとAnimalListDetailの切り替え
+   */
+
+  let detailIndex = ref(0)
+  let isDetail = ref(false)
+  // 表示するAnimalListDetailを返す
+  const currentList = computed( () => animals.value[detailIndex.value] )
+
+  const changeAnimalDetail = id => {
+    isDetail.value = !isDetail.value
+
+    // listItemからDetailへ切り替える / DetailからlistItemへの切り替えはid値を伴わない
+    if ( id !== null ) {
+      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
+    }
+  }  
 
 
   /**
@@ -264,16 +287,13 @@
   let isFilter = ref(false)
   // お気に入りのみの絞り込みを適用/非適用 
   let isFavFilter = ref(false)
-  // フィルター結果に一致するデータが無い場合, 告知
-  let isEmptyFilter = ref(false)
 
   // フィルターコンポーネントからフィルター条件を取得
   const getFilteredAnimal = async filters => {
-    const fields = Object.keys(filters)
     let q = animalCollectionRef
 
     // フィルター条件を適用したクエリの生成
-    fields.forEach(field => {
+    Object.keys(filters).forEach(field => {
       if ( filters[field] !== 'Any' ) {
         filters[field] = StringToBoolean(filters[field])
         q = query(q, where(field, '==', filters[field]))  
@@ -282,9 +302,9 @@
 
     animals.value = await getDocuments(q).catch( () => [] )
     if ( animals.value.length === 0 ) {
-      isEmptyFilter.value = true
+      emptyMsg.value = "フィルター条件に一致するデータがありませんでした"
     } else {
-      isEmptyFilter.value = false 
+      emptyMsg.value = '' 
       await getImages().catch( () => alert('画像の取得に失敗しました') )
     }
     isFilter.value = !isFilter.value

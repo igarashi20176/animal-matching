@@ -40,7 +40,7 @@
 
   const handleSignOut = () => {
     signOut(getAuth()).then( () => {
-      store.dispatch('signOut')
+      store.commit('signOut')
       router.push("/list")
     })
   }
