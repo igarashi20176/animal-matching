@@ -6,6 +6,7 @@
 
     <div class="flex justify-between items-center">
       
+      <!-- お気に入りのみ切り替えボタン -->
       <div v-if="!emptyMsg && store.state.isLogin"
         class="bg-yellow-200 p-2 rounded-2xl">
         <p>お気に入りのみ表示</p>  
@@ -16,6 +17,8 @@
       <div>
         <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="emptyMsg">{{ emptyMsg }}</p>
       </div>
+
+      <img :src="edit" alt="">
 
       <!-- フィルター機能 -->
       <the-normal-btn 
@@ -28,6 +31,7 @@
           :btn-a="filterBtns[0]" :btn-b="filterBtns[1]"
           @get-filtered="getFilteredAnimal" />
       </div>
+
     </div>
    
     
@@ -61,10 +65,10 @@
    */
   import { collection, doc,
     deleteDoc, updateDoc, onSnapshot,
-    query, where, snapshotEqual 
-  } from "firebase/firestore";
-  import { db } from "../firebase";
-  import { getStorage, deleteObject, ref as fsRef ,getDownloadURL } from "firebase/storage";
+    query, where
+  } from "firebase/firestore"
+  import { db } from "../firebase"
+  import { getStorage, ref as fsRef , deleteObject, getDownloadURL } from "firebase/storage"
 
 
   /**
@@ -74,13 +78,8 @@
   const animalCollectionRef = collection(db, 'animals')
   let userDocRef = null
 
-
-  const num = ref("")
-
   const store = useStore()
   const route = useRoute()
-
-  let number = ref(0)
 
   // 
   // 動物のリスト
@@ -102,8 +101,6 @@
       labelNameB: "メス" 
     },
   ]
-
-  const chara = route.params.chara ? route.params.chara : "" 
 
   /**
    * computed
@@ -161,8 +158,7 @@
             gender: doc.data().gender,
             isFav: doc.data().isFav,
             isPresent: doc.data().isPresent,
-            imgURL: "",
-            imgURL_origin: doc.data().imgURL_origin,
+            imgURL: doc.data().imgURL,
             editor: doc.data().editor
           }
           fbAnimals.push(animal)
@@ -176,7 +172,7 @@
   const getImages = async () => {
     if ( animals.value.length > 0 ) {
       animals.value.forEach( animal => {
-        getDownloadURL(fsRef(storage, animal.imgURL_origin))
+        getDownloadURL(fsRef(storage, animal.imgURL))
           .then((url) => {const xhr = new XMLHttpRequest()
             xhr.responseType = 'blob'
             xhr.onload = (event) => {
@@ -193,7 +189,6 @@
     }
   }
 
-
   // お気に入りの着け外し
   const toggleFav = async ( id, isFav ) => {
     store.commit('setFavList', { id: id, isFav: isFav })
@@ -209,13 +204,13 @@
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
 
-      const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL_origin))
+      const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL))
       const deleteDocAwait = await deleteDoc(doc(db, 'animals', id))
 
       Promise.all( [ deleteDocAwait, deleteObjectAwait ] )
         .catch( () => alert('削除に失敗しました。再度お試しください')  )
       
-      // 値の祝に失敗したら空の配列を返す
+      // 値の取得に失敗したら空の配列を返す
       animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
       if ( animals.value.length === 0 ) {
         emptyMsg.value = 'データが取得できませんでした。'
@@ -237,9 +232,10 @@
   
   onMounted( async () => {   
     // Matchingコンポーネントからparamsが送られてきた場合
-    if ( chara ) {
+    if ( route.params.chara ) {
+
       let q = animalCollectionRef
-      // q = query(q, where('chara', 'array-contains', chara))
+      q = query(q, where("chara", "array-contains", route.params.chara))
 
       animals.value = await getDocuments(q).catch( () => [] )
       if ( animals.value.length === 0 ) {

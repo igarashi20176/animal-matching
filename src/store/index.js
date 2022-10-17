@@ -5,6 +5,7 @@ const state = {
   isLogin: false,
   user: {
     uid: "",
+    name: "",
     chara:"",
     favList: ""
   }
@@ -13,7 +14,8 @@ const state = {
 const mutations = {
   auth( state, user ) {
     state.isLogin = true
-    state.user.uid = user.uid
+    state.user.uid = user.uid,
+    state.user.name = user.name
     state.user.chara = user.chara
     state.user.favList = user.favList
   },
@@ -33,6 +35,9 @@ const mutations = {
   },
   setChara( state, chara ) {
     state.user.chara = chara
+  },
+  resetChara( state ) {
+    state.user.chara = ""
   }
 }
 

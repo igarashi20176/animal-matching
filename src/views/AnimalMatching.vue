@@ -4,12 +4,16 @@
 		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
 		<p class="text-center mb-8 border-b-2 border-gray-400" v-else>診断結果</p>
 
-		<chart-list-item :chart="sendChart" @send-answer="countScore" v-if="!isEnd" />
+		<matching-list-item :chart="sendChart" @send-answer="countScore" v-if="!isEnd" />
 
-		<div class="bg-gray-200 p-5 rounded-2xl" v-if="isEnd">
+		<div class="relative bg-gray-200 p-5 rounded-2xl" v-if="isEnd">
+			
+			<the-normal-btn class="absolute bottom-5 right-3" @click="resetChara">
+				診断をやり直す
+			</the-normal-btn>
 			<div class="mb-10">
 				<p class="text-xl mb-6">あなたの性格診断の結果は...</p>
-				<p class="font-bold text-center text-3xl text-red-400 underline">{{ res }}</p>
+				<p class="font-bold text-center text-3xl text-red-400 underline">{{ store.state.user.chara }}</p>
 			</div>  
 			<div class="">
 				<p class="text-lg mb-5">ペットにもたくさんの性格を持った子たちがいます</p>
@@ -18,20 +22,21 @@
 			<div class="text-center">
 				<the-normal-btn 
 					class="mt-5"
-					@click="router.push( { name: 'list', params: { chara: res } } )">
+					@click="router.push( { name: 'list', params: { chara: store.state.user.chara } } )">
 					マッチングをする
 				</the-normal-btn>
 			</div>
+
   	</div>
 		
 	</div>
 </template>
 
 <script setup>
-	import { computed, ref } from "vue";
+	import { computed, ref, onMounted } from "vue";
 	import { useRouter } from "vue-router";
 	import { useStore } from "vuex";
-	import ChartListItem from "../templates/MatchingListItem.vue";
+	import MatchingListItem from "../templates/MatchingListItem.vue";
 	import TheNormalBtn from "../parts/TheNormalBtn.vue";
 
 	
@@ -86,6 +91,16 @@
 
 	
 	/**
+	 * 性格診断済の場合は, 診断をスキップ
+	 */
+
+	onMounted( () => {
+		if ( store.state.isLogin && store.state.user.chara ) {
+			isEnd.value = true
+		}
+	})
+
+	/**
 	 * 問題を進める & 問題を全て解き終わったらchart-list-itemを非表示
 	 */
 	let isEnd = ref(false)
@@ -116,24 +131,29 @@
 	}
 
 	// 結果を生成
-	let res = ref("")
+	let res = ""
 	const generateResult = () => {
 
 		if ( score > 32 ) {
-			res.value = "好奇心旺盛"
+			res = "好奇心旺盛"
 		} else if ( score > 25 ) {
-			res.value = '甘えん坊'
+			res = '甘えん坊'
 		} else if ( score > 20 ) {
-			res.value = '活発'
+			res = '活発'
 		} else if ( score > 15 ) {
-			res.value = '温厚'
+			res = '温厚'
 		} else if ( score > 10 ) {
-			res.value = '慎重'
+			res = '慎重'
 		} else {
-			res.value = '一人が好き'
+			res = '一人が好き'
 		}
 		
 		store.commit('setChara', res)
-	}
+		}
 
+		const resetChara = () => {
+			store.commit('resetChara')
+			isEnd.value = false
+			chartNum.value = 0
+		}
 </script>

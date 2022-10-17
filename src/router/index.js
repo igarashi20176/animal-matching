@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Matching from '../views/Matching.vue'
+import Matching from '../views/AnimalMatching.vue'
 import AnimalList from "../views/AnimalList.vue";
 import Add from "../views/AnimalListAdd.vue";
 import Store from "../store";
@@ -9,6 +9,9 @@ const routes = [
         path: '/matching',
         name: 'matching',
         component: Matching,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
         path: '/list:chara?',
@@ -48,7 +51,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if ( to.matched.some(record => record.meta.requiresAuth) ) {
         if( !Store.state.isLogin ) {
-            next({ name: "sign-in", params: { errMsg: "追加はログインが必要になります" } })
+            next({ name: "sign-in", params: { errMsg: "この機能はログインが必要になります" } })
         } else {
             next()
         }

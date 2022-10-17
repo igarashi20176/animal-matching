@@ -32,6 +32,7 @@
         
         const uid = data.user.uid
         setDoc( doc(db, 'users', uid ), {
+          name: `test_${ Math.floor( Math.random() * 101 ) }`,
           chara: "",
           favList: []
         })

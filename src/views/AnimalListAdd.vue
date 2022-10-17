@@ -156,7 +156,7 @@
           
           imageFileInfo.value = {
             imgName: "画像を変える場合は, 再選択してください",
-            imgUrl_origin_copy: data.data().imgURL_origin,
+            imgUrl_copy: data.data().imgURL,
           }
 
         }).catch(() => {
@@ -186,9 +186,7 @@
           chara: newAnimalInfo.value.chara,
           remarks: newAnimalInfo.value.remarks,
           isPresent: true,
-          // imgURL...imgURL_originの変換後のURLが格納
-          imgURL: "",
-          imgURL_origin: imageFileInfo.value.imgURL_origin,
+          imgURL: imageFileInfo.value.imgURL,
           editor: store.state.user.uid,
           date: Date.now()
         });
@@ -218,19 +216,19 @@
           place: newAnimalInfo.value.place,
           chara: newAnimalInfo.value.chara,
           remarks: newAnimalInfo.value.remarks,
-          isPresent: true,
-          imgURL: ""
+          isPresent: true
         })
 
       // 画像を変更した場合
-      if ( imageFileInfo.value.imgName !== "画像を変える場合は, 再選択してください" ) {
+      if ( imageFileInfo.value.imgURL !== imageFileInfo.value.imgURL_copy ) {
 
         // 参照エラーで実行できない。同じ環境でAnimalListの方では実行できる...
-        // await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_origin_copy))
+        const deleteImageAwait = 
+          await deleteObject(fsRef(storage, b.imgURL))
 
         const updateDocAwait =  
           await updateDoc(doc(db, 'animals', route.params.id), {
-            imgURL_origin: imageFileInfo.value.imgURL_origin
+            imgURL: imageFileInfo.value.imgURL
           })
 
         const uploadImageAwait = 
@@ -238,8 +236,10 @@
             console.log("画像をアップロード", snapshot)
           })
 
-          promiseAry = [ updateDocAwait, uploadImageAwait ]
+          promiseAry = [ deleteImageAwait, updateDocAwait, uploadImageAwait ]
       }
+
+      console.log(promiseAry);
 
       Promise.all( [ updateDocAwait, ...promiseAry ] )
         .then( () => {
@@ -258,10 +258,8 @@
   let imageFileInfo = ref({
     file: {},
     storageRef: {},
-    uuidFileName: "",
-    // imgURL_origin...storageに保存されている画像にアクセスするためのURL
-    imgURL_origin: "",
-    imgURL_origin_copy: "",
+    imgURL: "",
+    imgURL_copy: "",
     imgName: ""
   })
 
@@ -274,11 +272,9 @@
     // 画像が選択された事を表示する
     imageFileInfo.value.imgName = file.name
     // storage内のフォルダ名/ファイル名
-    imageFileInfo.value.uuidFileName = `${FOLDER_NAME}/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
+    imageFileInfo.value.imgURL = `${FOLDER_NAME}/${String(uuid4()).substring(0,8)}.${file.type.substring(6)}`
 
-    imageFileInfo.value.storageRef = fsRef(storage, imageFileInfo.value.uuidFileName);
-
-    imageFileInfo.value.imgURL_origin = `gs://${imageFileInfo.value.storageRef.bucket}/${imageFileInfo.value.uuidFileName}`;
+    imageFileInfo.value.storageRef = fsRef(storage, imageFileInfo.value.imgURL);
   } 
 
 </script>
