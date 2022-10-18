@@ -1,37 +1,42 @@
 <template>
-  <header class="bg-[#fafafa] p-4 text-center">
-    <h2>タイトル</h2>
-  </header>
-  <div class="w-2/5 min-w-[500px] m-auto box-border mt-10 mb-8 p-2 rounded-3xl flex justify-center text-center bg-[#fafafa]">
-    <router-link to="/chart">
-      <button class="w-[100px] border-2 rounded-md p-1 mx-1  active:bg-red-400">
-        診断
-      </button>
-    </router-link>
-    <router-link :to="{ name: 'animal', params: { filter: true } }">
-      <button class="w-[100px] border-2 rounded-md p-1 mx-1  active:bg-red-400">
-        お気に入り
-      </button>
-    </router-link>
-    <router-link to="/animal">
-      <button class="w-[100px] border-2 rounded-md p-1 mx-1  active:bg-red-400">
-        一覧
-      </button>
-    </router-link>
-  </div>
-  <div class="scroll h-[450px] w-[800px] overflow-auto rounded-2xl m-auto p-2 bg-[#fafafa]">
+  <the-header />
+
+  <the-routing-btn-col3 :btn-a="routingBtns[0]" :btn-b="routingBtns[1]" :btn-c="routingBtns[2]" />
+
+  <div class="relative scroll-none h-[450px] w-[800px] overflow-auto border-2 border-gray-400 rounded-2xl m-auto p-2 bg-[#fff]">
     <router-view />
   </div>
-  <footer class=" mt-10 text-center p-3 bg-[#fef9c3]">
-    @copyright.inc
-  </footer>
+
+  <the-footer>
+    <h2 class="text-center">@copyright.inc</h2>
+  </the-footer>
 </template>
 
 <script setup>
+import TheHeader from './templates/TheHeader.vue';
+import TheFooter from './parts/TheFooter.vue';
+import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
+
+const routingBtns = [
+  {
+    tag: "診断",
+    path: "/matching"
+  },
+  {
+    tag: "一覧",
+    path: "/list"
+  },
+  {
+    tag: "追加",
+    path: "/add"
+  }
+]
+
 </script>
 
 <style scoped>
-  .scroll::-webkit-scrollbar{
+  .scroll-none::-webkit-scrollbar{
     display: none;
   }
+
 </style>
