@@ -7,10 +7,19 @@ This is My first vue.js creation / 2022/09/25 ~
 ## ◆制作動機(~未編集~)
 犬猫の殺処分が問題となり, ペットショップからではなく, 飼い主から別の飼い主への譲渡という形でペットを飼う形態が変化してきた。そこで, 飼い主が理想のペットを探しやすくなるとともに, ペットとの性格マッチングによって, ペットも意志をもった存在であるということを自覚させることができるwebアプリを作ろうと思った。
 
+## ◆制作後の反省点
+1.Firebaseからデータを取得するにあたって, 画面の描写に間に合わず, 画面が表示された後, 取得されたデータから順次に反映されてしまう
+ → 非同期処理に関する知識やデータの取得⇒反映のプロセスをより意識する必要があった  
+   
+2.ユーザの情報を保持するためにVuexを用いたが, それによりデータの流れが煩雑になってしまったように思う。代替手段がないか考える必要がある
+  
+3.予定より作業が長引いてしまったため, レスポンシブに対応できなかった。 今一度html, cssの基本的な設計を学びたい
+ 
 ## ◆機能一覧
 診断 - 利用者の性格診断を行い, 性格の合うペットとマッチングします  
 一覧 - 登録されているペットたちを一覧表示します。フィルタリング機能も追加しています  
 追加 - 登録したいペットの登録情報を入力し, DBに保存します
+認証 - firebase Authenticationを用い実装しました。自分の投稿したデータの変更・削除やお気に入りリストを実装しています
 
 ## ◆Componentの概要
 以下のサイトを参考に, 機能的なアプリを作るよう心掛けました。  
@@ -20,38 +29,77 @@ https://qiita.com/ngron/items/ab2a17ae483c95a2f15e
 【React/Vue.js】コンポーネント設計の（個人的）ベストプラクティス  
 https://zenn.dev/offers/articles/20220523-component-design-best-practice 
 
-### ●&ensp;Pages群
+### ●vuex
+Firestoreから入手したユーザ情報を保存し, 以降vuexからユーザ情報を参照します
+
+### ●vue-router
+Routing機能を実装しました。
+ログインが必要なページへの遷移には, 認証が必要になるように設定しています
+
+### ●Pages群
 ページの表示を目的としたコンポーネントです
 
 #### ・App.vue
-&ensp;アプリの基本となる画面の構成を担います。一連の画面遷移による画面描写はこのApp.vue上で行われます
+アプリの基本となる画面の構成を担います。一連の画面遷移による画面描写はこのApp.vue上で行われます
 
-### ●&ensp;Views群
-&ensp;後述するTemplates群のコンポーネントに対し, データを渡します。またデータは, API通信によりFirebase Cloud Firestoreから取得しています
+### ●Views群
+後述するTemplates群のコンポーネントに対し, データを渡します。またデータは, API通信によりFirebase Cloud Firestoreから取得しています
 
 #### ・AnimalList.vue
-&ensp;動物たちのリストを表示するためのContainer(入れ物)としての役割です。  
-&ensp;後述するAnimalListItem.vueとは, Container ⇔ View(親コンポーネントからのpropsのみで機能するコンポーネント)の関係です  
+動物たちのリストを表示するためのContainer(入れ物)としての役割です。  
+後述するAnimalListItem.vueとは, Container ⇔ View(親コンポーネントからのpropsのみで機能するコンポーネント)の関係です  
+データのフィルター機能やデータの削除機能を持ちます
 
 #### ・AnimalListAdd.vue
-&ensp;登録したいペットの個体情報を入力します
+ログイン後に使用できる機能です　　
+登録したいペットの個体情報を入力します。編集機能も持ちます
 
-#### ・ChartList.vue
-&ensp;後述するChartList.vueとは, Container ⇔ Viewとの関係です。診断チャートを表示 & 診断結果を表示します
+#### ・AnimalMathing.vue
+ログイン後に使用できる機能です　　
+後述するMathingListItem.vueとは, Container ⇔ Viewとの関係です。診断チャートを表示 & 診断結果を表示します　　
+診断結果であるユーザの性格をFirestoreに保存します
 
-### ●&ensp;Templates群
-&ensp;コンポーネントを組み合わせることを目的としたコンポーネントであり, ロジックを持ちます
+#### ・SignIn.vue
+サインイン機能です。  
+サインした後はvuexに, ログインしているユーザ情報を登録します
+
+#### ・Register.vue
+新規登録機能です。
+
+### ●Templates群
+コンポーネントを組み合わせることを目的としたコンポーネントであり, ロジックを持ちます
 
 #### ・AnimalListItem.vue
-&ensp;親コンポーネントであるAnimalList.vueから動物たちのリストを受け取り, それらを表示します。
+親コンポーネントであるAnimalList.vueから動物たちのリストを受け取り, それらを表示します。
 
 #### ・AnimalListDetail.vue
-&ensp;AnimalListItem.vueのリストがクリックされた際に, そのリストの詳細を表示します
+AnimalListItem.vueのリストがクリックされた際に, そのリストの詳細を表示します
 
-#### ・ChartListItem.vue
-&ensp;診断チャートの各問を表示します。動的に...
+#### ・MatchingListItem.vue
+性格診断の各問題を表示します。
 
-### ●&ensp;Parts群
-&ensp;最小粒度のコンポーネントで, UIとしての機能を持ち, ロジックを有しません
+#### ・TheHeader.vue
+アカウントの新規登録, サインインの機能を併せたHeaderです
 
- - btn-primary
+#### ・TheFilterRadioBtn.vue
+データのフィルタリング機能を担います
+
+### ●Parts群
+最小粒度のコンポーネントで, UIとしての機能を持ち, ロジックを有しません   
+・TheNormalBtn.vue - 標準のボタン  
+・TheFavBtn - お気に入りのON/OFFを切り替えます  
+・TheFooter.vue - 標準のボタン  
+・TheRoutingBtnCol3 - 3つのルーティングボタン。propsで設定を登録  
+・TheToggleBtn - ON/OFFでtrue/falseを切り替えるスライド式のボタン
+
+## ◆Firebaseの概要
+
+### ●Firestore
+・animalsコレクション - 動物たちの情報が登録されます  
+・usersコレクション - ユーザの情報を登録します
+
+### ●storage
+・images/ - 動物の画像が保存されます  
+・app-images/ - アプリで必要な画像が保存されています
+
+
