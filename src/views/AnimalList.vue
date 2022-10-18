@@ -216,6 +216,7 @@
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
 
+      // 画像とドキュメントを削除
       const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL_origin))
       const deleteDocAwait = await deleteDoc(doc(db, 'animals', id))
 
