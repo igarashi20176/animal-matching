@@ -6,5 +6,8 @@ export default defineConfig({
   plugins: [vue()],
   define: {
     'process.env': process.env
+  },
+  build: {
+    chunkSizeWarningLimit: 100000000
   }
 })
