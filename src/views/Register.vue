@@ -11,24 +11,32 @@
 
 <script setup>
   import { ref } from "vue";
-  import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
   import { useRouter } from "vue-router";
   import TheNormalBtn from "../parts/TheNormalBtn.vue";
   
+  /**
+   * firebase import
+   */
   import { doc, setDoc,
   } from "firebase/firestore";
+  import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
   import { db } from "../firebase";
 
   const router = useRouter()
+
 
   let email = ref("")
   let password = ref("")
 
   
+  /**
+   * ユーザ情報を登録
+   */
+
   const register = () => {
     createUserWithEmailAndPassword(getAuth(), email.value, password.value)
       .then (data => {
-        console.log("Successfully registered!", data.user.uid);
+        console.log("Successfully registered!");
         
         const uid = data.user.uid
         setDoc( doc(db, 'users', uid ), {
@@ -40,7 +48,7 @@
       })
       .catch (error => {
         console.log(error.code);
-        alert(error.message)
+        alert("登録に失敗しました。もう一度お試しください")
       })
   }
 </script>

@@ -9,11 +9,12 @@
       <!-- 選択されたデータの編集を行う -->
       <button @click.stop="router.push({ name: 'add', params: { id: props.animal.id } })"
         class="block w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
-        <img src="../assets/images/editIcon.png" alt="">
+        <img :src="appImages.editIcon" alt="">
       </button>
+      <!-- 選択されたデータの削除を行う -->
       <button @click.stop="emits('delete-doc', props.animal.id)"
         class="w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
-        <img src="../assets/images/deleteIcon.png" alt="">
+        <img :src="appImages.deleteIcon" alt="">
       </button>
     </div>
 
@@ -39,19 +40,21 @@
     </figure>
     <img 
       class="absolute top-0 left-0 w-[70px] h-[70px]"
-      src="../assets/images/dog_silhouette.png" alt="dog" v-if="props.animal.species === 'dog'">
+      :src="appImages.dogIcon" alt="dog" v-if="props.animal.species === 'dog'">
     <img
       class="absolute top-0 left-0 w-[70px] h-[70px]"
-      src="../assets/images/cat_silhouette.png" alt="dog" v-if="props.animal.species === 'cat'">
+      :src="appImages.catIcon" alt="dog" v-if="props.animal.species === 'cat'">
     
   </a>
 
 </template>
 
 <script setup>
-  import { computed } from "vue";
+  import { ref, computed, onBeforeMount } from "vue";
   import TheFavBtn from "../parts/TheFavBtn.vue";
   import { useRouter } from "vue-router";
+  import { getStorage, ref as fsRef , getDownloadURL } from "firebase/storage"
+
 
   const props = defineProps({
     animal: Object,
@@ -74,4 +77,33 @@
   })
 
   const emits = defineEmits([ 'change-detail', 'toggle-fav', 'delete-doc' ])
+
+
+  /**
+   * アプリに必要な画像をダウンロード
+   */
+  const appImages = ref({
+      catIcon: "app-images/cat_silhouette.png",
+      dogIcon: "app-images/dog_silhouette.png",
+      deleteIcon: "app-images/delete-icon.png",
+      editIcon: "app-images/edit-icon.png",
+  })
+
+  onBeforeMount( () => {
+    Object.keys(appImages.value).forEach( icon => {
+      getDownloadURL(fsRef(getStorage(), appImages.value[icon]))
+        .then((url) => {const xhr = new XMLHttpRequest()
+          xhr.responseType = 'blob'
+          xhr.onload = (event) => {
+            const blob = xhr.response
+          }
+          xhr.open('GET', url)
+          xhr.send();
+
+          appImages.value[icon] = url
+        }).catch((error) => {
+          alert('画像の取得に失敗しました')
+        })
+    })
+  })
 </script>

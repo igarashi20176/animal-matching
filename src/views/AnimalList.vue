@@ -76,12 +76,13 @@
    */
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
+  // user情報を更新するための参照
   let userDocRef = null
 
   const store = useStore()
   const route = useRoute()
 
-  // 
+   
   // 動物のリスト
   let animals = ref([])
   // フィルターのボタン
@@ -102,6 +103,7 @@
     },
   ]
 
+  
   /**
    * computed
    */
@@ -135,13 +137,12 @@
     }
   })
 
-
   
   /**
    * firestoreに対する処理
    */
 
-  // animalsドキュメントの取得
+  // animalsコレクションの取得
   const getDocuments = query => {
     return new Promise( function( resolve ) {
       onSnapshot(query, (querySnapshot) => {
@@ -169,7 +170,7 @@
   }
 
   // animalsコレクションの中の個々のドキュメントに紐づく画像を取得
-  const getImages = async () => {
+  const getImages = () => {
     if ( animals.value.length > 0 ) {
       animals.value.forEach( animal => {
         getDownloadURL(fsRef(storage, animal.imgURL))
@@ -183,8 +184,8 @@
 
             animal.imgURL = url
           }).catch((error) => {
-            console.log(error)
-        })
+            alert('画像の取得に失敗しました')
+          })
       })
     }
   }
@@ -198,8 +199,7 @@
     }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
   }
 
-
-  // ドキュメントの削除
+  // ドキュメントと紐づく画像の削除
   const deleteDocument = async id => {
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
@@ -216,7 +216,7 @@
         emptyMsg.value = 'データが取得できませんでした。'
       } else {
         emptyMsg.value = ''
-        await getImages().catch( () => alert('画像の取得に失敗しました') )
+        getImages()
       }
     }
   }
@@ -226,11 +226,11 @@
    * 初期状態のセットアップ
    */
 
-  // 初期データ取得数が0だった場合, 告知  
+  // データの取得数が0だった場合, 告知  
   let emptyMsg = ref("")
 
-  
   onMounted( async () => {   
+
     // Matchingコンポーネントからparamsが送られてきた場合
     if ( route.params.chara ) {
 
@@ -242,16 +242,17 @@
         emptyMsg.value = 'データが取得できませんでした'
       } else {
         emptyMsg.value = ''
-        await getImages().catch( () => alert('画像の取得に失敗しました') )
+        getImages()
       }
 
+    // 送られてこなかった場合
     } else {
       animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
       if ( animals.value.length === 0 ) {
         emptyMsg.value = 'データが取得できませんでした'
       } else {
         emptyMsg.value = ''
-        await getImages().catch( () => alert('画像の取得に失敗しました') )
+        getImages()
       }
 
       if ( store.state.isLogin ) {
@@ -289,7 +290,7 @@
   // お気に入りのみの絞り込みを適用/非適用 
   let isFavFilter = ref(false)
 
-  // フィルターコンポーネントからフィルター条件を取得
+  // フィルターコンポーネントからフィルター条件を基にフィルタリング
   const getFilteredAnimal = async filters => {
     let q = animalCollectionRef
 
@@ -306,7 +307,7 @@
       emptyMsg.value = "フィルター条件に一致するデータがありませんでした"
     } else {
       emptyMsg.value = '' 
-      await getImages().catch( () => alert('画像の取得に失敗しました') )
+      getImages()
     }
     isFilter.value = !isFilter.value
   }

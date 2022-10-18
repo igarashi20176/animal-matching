@@ -1,4 +1,5 @@
 <template>
+
 	<div class="w-3/4  min-w-[600px] m-auto p-2">
 		<h2 class="font-bold text-3xl text-center mb-3">性格診断</h2>
 		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
@@ -8,9 +9,6 @@
 
 		<div class="relative bg-gray-200 p-5 rounded-2xl" v-if="isEnd">
 			
-			<the-normal-btn class="absolute bottom-5 right-3" @click="resetChara">
-				診断をやり直す
-			</the-normal-btn>
 			<div class="mb-10">
 				<p class="text-xl mb-6">あなたの性格診断の結果は...</p>
 				<p class="font-bold text-center text-3xl text-red-400 underline">{{ store.state.user.chara }}</p>
@@ -19,6 +17,7 @@
 				<p class="text-lg mb-5">ペットにもたくさんの性格を持った子たちがいます</p>
 				<p class="text-lg">あなたに合うペットとマッチングしましょう!</p>
 			</div>
+
 			<div class="text-center">
 				<the-normal-btn 
 					class="mt-5"
@@ -27,9 +26,14 @@
 				</the-normal-btn>
 			</div>
 
+			<the-normal-btn class="absolute bottom-5 right-3" @click="resetChara">
+				診断をやり直す
+			</the-normal-btn>
+
   	</div>
-		
+
 	</div>
+
 </template>
 
 <script setup>
@@ -38,8 +42,15 @@
 	import { useStore } from "vuex";
 	import MatchingListItem from "../templates/MatchingListItem.vue";
 	import TheNormalBtn from "../parts/TheNormalBtn.vue";
-
 	
+	import { updateDoc, doc } from "firebase/firestore"
+  import { db } from "../firebase"
+
+	/**
+	 * firestore ref
+	 */
+	let userDocRef = null
+
 	const store = useStore()
 	const router = useRouter()
 
@@ -98,7 +109,12 @@
 		if ( store.state.isLogin && store.state.user.chara ) {
 			isEnd.value = true
 		}
+
+		if ( store.state.isLogin ) {
+			userDocRef = doc(db, 'users', store.state.user.uid )
+		}
 	})
+
 
 	/**
 	 * 問題を進める & 問題を全て解き終わったらchart-list-itemを非表示
@@ -107,6 +123,8 @@
 
 	// chartNum番目の問題を返す
 	const sendChart = computed( () => questions[chartNum.value] )
+
+	let chartNum = ref(0)
 
 	const countNum = () => {
 		if ( chartNum.value < questions.length - 1 ) {
@@ -122,7 +140,6 @@
 	 * スコアを加算
 	 */
 	let score = 0
-	let chartNum = ref(0)
 
 	const countScore = choice => {
 		choice = choice + "_score"
@@ -132,7 +149,7 @@
 
 	// 結果を生成
 	let res = ""
-	const generateResult = () => {
+	const generateResult = async () => {
 
 		if ( score > 32 ) {
 			res = "好奇心旺盛"
@@ -149,11 +166,22 @@
 		}
 		
 		store.commit('setChara', res)
-		}
 
-		const resetChara = () => {
-			store.commit('resetChara')
-			isEnd.value = false
-			chartNum.value = 0
-		}
+		await updateDoc( userDocRef , {
+      chara: store.state.user.chara
+    }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
+  
+	}
+
+		// 登録されているユーザの性格情報をリセット
+	const resetChara = async () => {
+		store.commit('resetChara')
+		isEnd.value = false
+		chartNum.value = 0
+
+		await updateDoc( userDocRef , {
+			chara: store.state.user.chara
+		}).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
+  
+	}
 </script>

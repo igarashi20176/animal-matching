@@ -21,11 +21,11 @@
   } from "firebase/firestore";
   import { db } from "../firebase";
 
-  const userInfo = ref({})
   
   const route = useRoute()
   const router = useRouter()
   const store = useStore()
+
 
   let email = ref("")
   let password = ref("")
@@ -34,6 +34,13 @@
   if ( route.params.errMsg ) {
     errMsg.value = route.params.errMsg
   }
+
+
+  /**
+   * ログインしたユーザ情報を送vuexに送信
+   */
+  
+  const userInfo = ref({})
 
   const signIn = () => {
     signInWithEmailAndPassword(getAuth(), email.value, password.value)

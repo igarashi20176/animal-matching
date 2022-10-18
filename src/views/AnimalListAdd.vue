@@ -168,7 +168,7 @@
 
 
   /**
-   * Firebaseに情報を登録
+   * FireStoreに情報を登録
    */
   const addAnimal = async () => {
     // Editの場合と, 新規登録の場合とで分岐
@@ -222,7 +222,6 @@
       // 画像を変更した場合
       if ( imageFileInfo.value.imgURL !== imageFileInfo.value.imgURL_copy ) {
 
-        // 参照エラーで実行できない。同じ環境でAnimalListの方では実行できる...
         const deleteImageAwait = 
           await deleteObject(fsRef(storage, b.imgURL))
 
@@ -252,7 +251,7 @@
 
 
   /**
-   * 画像を取得・画像の保存
+   * 選択された画像をの保存
    */
 
   let imageFileInfo = ref({
@@ -265,7 +264,7 @@
 
   const FOLDER_NAME = "images"
 
-  // inputで画像を選択した時に発火
+  // inputで画像を選択した時に発火し, 画像情報を修得
   const getImageFile = props => {
     const file = props.target.files[0]
     imageFileInfo.value.file = file
