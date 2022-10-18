@@ -50,10 +50,9 @@
 </template>
 
 <script setup>
-  import { ref, computed, onBeforeMount } from "vue";
+  import { computed } from "vue";
   import TheFavBtn from "../parts/TheFavBtn.vue";
   import { useRouter } from "vue-router";
-  import { getStorage, ref as fsRef , getDownloadURL } from "firebase/storage"
 
 
   const props = defineProps({
