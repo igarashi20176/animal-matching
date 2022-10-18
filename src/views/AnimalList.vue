@@ -6,16 +6,19 @@
 
     <div class="flex justify-between items-center">
       
-      <div v-if="!isEmptySetup && !isEmptyFilter && store.state.isLogin"
+      <!-- お気に入りのみ切り替えボタン -->
+      <div v-if="!emptyMsg && store.state.isLogin"
         class="bg-yellow-200 p-2 rounded-2xl">
         <p>お気に入りのみ表示</p>  
-        <the-toggle-btn  @change=" checked => isFavFilter = checked " />
+        <the-toggle-btn  v-model:value="isFavFilter"  />
+        <!-- <the-toggle-btn  :value="isFavFilter" @update:value="isFavFilter = $event"  /> -->
       </div>
 
       <div>
-        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptySetup">データが取得できませんでした</p>
-        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="isEmptyFilter">フィルターに一致するデータがありませんでした</p>
+        <p class="text-xl ml-5 border-b-2 border-[#333]" v-if="emptyMsg">{{ emptyMsg }}</p>
       </div>
+
+      <img :src="edit" alt="">
 
       <!-- フィルター機能 -->
       <the-normal-btn 
@@ -28,6 +31,7 @@
           :btn-a="filterBtns[0]" :btn-b="filterBtns[1]"
           @get-filtered="getFilteredAnimal" />
       </div>
+
     </div>
    
     
@@ -49,6 +53,7 @@
 <script setup>
   import { computed, onMounted, ref } from "vue"
   import { useStore } from "vuex";
+  import { useRoute } from "vue-router";
   import AnimalListItem from "../templates/AnimalListItem.vue";
   import AnimalListDetail from "../templates/AnimalListDetail.vue";
   import TheFilterRadioBtn from "../templates/TheFilterRadioBtn.vue";
@@ -60,10 +65,10 @@
    */
   import { collection, doc,
     deleteDoc, updateDoc, onSnapshot,
-    query, where 
-  } from "firebase/firestore";
-  import { db } from "../firebase";
-  import { getStorage, deleteObject, ref as fsRef ,getDownloadURL } from "firebase/storage";
+    query, where
+  } from "firebase/firestore"
+  import { db } from "../firebase"
+  import { getStorage, ref as fsRef , deleteObject, getDownloadURL } from "firebase/storage"
 
 
   /**
@@ -71,10 +76,13 @@
    */
   const storage = getStorage()
   const animalCollectionRef = collection(db, 'animals')
+  // user情報を更新するための参照
   let userDocRef = null
 
-
   const store = useStore()
+  const route = useRoute()
+
+   
   // 動物のリスト
   let animals = ref([])
   // フィルターのボタン
@@ -129,13 +137,12 @@
     }
   })
 
-
   
   /**
-   * methods
+   * firestoreに対する処理
    */
 
-  // animalsドキュメントの取得
+  // animalsコレクションの取得
   const getDocuments = query => {
     return new Promise( function( resolve ) {
       onSnapshot(query, (querySnapshot) => {
@@ -152,8 +159,7 @@
             gender: doc.data().gender,
             isFav: doc.data().isFav,
             isPresent: doc.data().isPresent,
-            imgURL: "",
-            imgURL_origin: doc.data().imgURL_origin,
+            imgURL: doc.data().imgURL,
             editor: doc.data().editor
           }
           fbAnimals.push(animal)
@@ -164,10 +170,10 @@
   }
 
   // animalsコレクションの中の個々のドキュメントに紐づく画像を取得
-  const getImages = async () => {
+  const getImages = () => {
     if ( animals.value.length > 0 ) {
       animals.value.forEach( animal => {
-        getDownloadURL(fsRef(storage, animal.imgURL_origin))
+        getDownloadURL(fsRef(storage, animal.imgURL))
           .then((url) => {const xhr = new XMLHttpRequest()
             xhr.responseType = 'blob'
             xhr.onload = (event) => {
@@ -178,58 +184,39 @@
 
             animal.imgURL = url
           }).catch((error) => {
-            console.log(error)
-        })
+            alert('画像の取得に失敗しました')
+          })
       })
     }
   }
 
-  
-  // animalListItemとAnimalListDetailの切り替え
-  let detailIndex = ref(0)
-  let isDetail = ref(false)
-  // 表示するAnimalListDetailを返す
-  const currentList = computed( () => animals.value[detailIndex.value] )
-
-  const changeAnimalDetail = id => {
-    isDetail.value = !isDetail.value
-
-    // detailからitemListへの移行にはid値を伴わない
-    if ( id !== null ) {
-      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
-    }
-  }  
-
-
   // お気に入りの着け外し
   const toggleFav = async ( id, isFav ) => {
-    await store.dispatch('setFavList', { id: id, isFav: isFav })
+    store.commit('setFavList', { id: id, isFav: isFav })
 
     await updateDoc( userDocRef , {
       favList: store.state.user.favList
     }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
   }
 
-
-  // ドキュメントの削除
+  // ドキュメントと紐づく画像の削除
   const deleteDocument = async id => {
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
 
-      // 画像とドキュメントを削除
-      const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL_origin))
+      const deleteObjectAwait = await deleteObject(fsRef(storage, b.imgURL))
       const deleteDocAwait = await deleteDoc(doc(db, 'animals', id))
 
       Promise.all( [ deleteDocAwait, deleteObjectAwait ] )
         .catch( () => alert('削除に失敗しました。再度お試しください')  )
       
-      // 値の祝に失敗したら空の配列を返す
+      // 値の取得に失敗したら空の配列を返す
       animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
       if ( animals.value.length === 0 ) {
-        isEmptySetup = true
+        emptyMsg.value = 'データが取得できませんでした。'
       } else {
-        isEmptySetup = false
-        await getImages().catch( () => alert('画像の取得に失敗しました') )
+        emptyMsg.value = ''
+        getImages()
       }
     }
   }
@@ -239,22 +226,59 @@
    * 初期状態のセットアップ
    */
 
-  // 初期データ取得数が0だった場合, 告知  
-  let isEmptySetup = ref(false)
+  // データの取得数が0だった場合, 告知  
+  let emptyMsg = ref("")
 
   onMounted( async () => {   
-    animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
-    if ( animals.value.length === 0 ) {
-      isEmptySetup = true
-    } else {
-      isEmptySetup = false
-      await getImages().catch( () => alert('画像の取得に失敗しました') )
-    }
 
-    if ( store.state.user.uid ) {
-      userDocRef = doc(db, 'users', store.state.user.uid )
+    // Matchingコンポーネントからparamsが送られてきた場合
+    if ( route.params.chara ) {
+
+      let q = animalCollectionRef
+      q = query(q, where("chara", "array-contains", route.params.chara))
+
+      animals.value = await getDocuments(q).catch( () => [] )
+      if ( animals.value.length === 0 ) {
+        emptyMsg.value = 'データが取得できませんでした'
+      } else {
+        emptyMsg.value = ''
+        getImages()
+      }
+
+    // 送られてこなかった場合
+    } else {
+      animals.value = await getDocuments(animalCollectionRef).catch( () => [] )
+      if ( animals.value.length === 0 ) {
+        emptyMsg.value = 'データが取得できませんでした'
+      } else {
+        emptyMsg.value = ''
+        getImages()
+      }
+
+      if ( store.state.isLogin ) {
+        userDocRef = doc(db, 'users', store.state.user.uid )
+      }
     }
   })
+
+
+  /**
+   * animalListItemとAnimalListDetailの切り替え
+   */
+
+  let detailIndex = ref(0)
+  let isDetail = ref(false)
+  // 表示するAnimalListDetailを返す
+  const currentList = computed( () => animals.value[detailIndex.value] )
+
+  const changeAnimalDetail = id => {
+    isDetail.value = !isDetail.value
+
+    // listItemからDetailへ切り替える / DetailからlistItemへの切り替えはid値を伴わない
+    if ( id !== null ) {
+      detailIndex.value = animals.value.findIndex(animal => animal.id === id)
+    }
+  }  
 
 
   /**
@@ -265,16 +289,13 @@
   let isFilter = ref(false)
   // お気に入りのみの絞り込みを適用/非適用 
   let isFavFilter = ref(false)
-  // フィルター結果に一致するデータが無い場合, 告知
-  let isEmptyFilter = ref(false)
 
-  // フィルターコンポーネントからフィルター条件を取得
+  // フィルターコンポーネントからフィルター条件を基にフィルタリング
   const getFilteredAnimal = async filters => {
-    const fields = Object.keys(filters)
     let q = animalCollectionRef
 
     // フィルター条件を適用したクエリの生成
-    fields.forEach(field => {
+    Object.keys(filters).forEach(field => {
       if ( filters[field] !== 'Any' ) {
         filters[field] = StringToBoolean(filters[field])
         q = query(q, where(field, '==', filters[field]))  
@@ -283,10 +304,10 @@
 
     animals.value = await getDocuments(q).catch( () => [] )
     if ( animals.value.length === 0 ) {
-      isEmptyFilter.value = true
+      emptyMsg.value = "フィルター条件に一致するデータがありませんでした"
     } else {
-      isEmptyFilter.value = false 
-      await getImages().catch( () => alert('画像の取得に失敗しました') )
+      emptyMsg.value = '' 
+      getImages()
     }
     isFilter.value = !isFilter.value
   }

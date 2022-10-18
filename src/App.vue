@@ -3,7 +3,7 @@
 
   <the-routing-btn-col3 :btn-a="routingBtns[0]" :btn-b="routingBtns[1]" :btn-c="routingBtns[2]" />
 
-  <div class="relative scroll h-[450px] w-[800px] overflow-auto border-2 border-gray-400 rounded-2xl m-auto p-2 bg-[#fff]">
+  <div class="relative scroll-none h-[450px] w-[800px] overflow-auto border-2 border-gray-400 rounded-2xl m-auto p-2 bg-[#fff]">
     <router-view />
   </div>
 
@@ -13,14 +13,14 @@
 </template>
 
 <script setup>
-import TheHeader from './parts/TheHeader.vue';
+import TheHeader from './templates/TheHeader.vue';
 import TheFooter from './parts/TheFooter.vue';
 import TheRoutingBtnCol3 from './parts/TheRoutingBtnCol3.vue';
 
 const routingBtns = [
   {
     tag: "診断",
-    path: "/chart"
+    path: "/matching"
   },
   {
     tag: "一覧",
@@ -35,7 +35,7 @@ const routingBtns = [
 </script>
 
 <style scoped>
-  .scroll::-webkit-scrollbar{
+  .scroll-none::-webkit-scrollbar{
     display: none;
   }
 
