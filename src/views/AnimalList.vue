@@ -103,13 +103,14 @@
     },
   ]
 
-  
-  /**
-   * computed
-   */
 
-  // ログインユーザーとデータの登録者が一致するか
-  // 一致するユーザは, データの編集・書き込みが可能
+  /**
+   * ログインユーザーとデータの登録者が一致するか
+   * 一致するユーザは, データの編集・書き込みが可能
+   * 
+   * @param id  ドキュメントID　
+   * @return Boolean
+   */
   const isEditor = computed( () => {
     return id => {
       if ( store.state.isLogin ) {
@@ -121,7 +122,12 @@
     }
   })
 
-  // ログインユーザにお気に入り登録されているデータであるか
+  /**
+   * ログインユーザにお気に入りリストに該当するか
+   * 
+   * @param id  ドキュメントid
+   * @return Boolean
+   */
   const isFav = computed( () => {
     return id => {
       if ( store.state.isLogin ) {
@@ -140,6 +146,9 @@
   
   /**
    * firestoreに対する処理
+   * 
+   * @param query  firestore Ref
+   * @return fbAnimals  resolve/取得したドキュメントのリスト 
    */
 
   // animalsコレクションの取得
@@ -190,7 +199,12 @@
     }
   }
 
-  // お気に入りの着け外し
+  /**
+   * お気に入りの着け外し
+   * 
+   * @param id  ドキュメントID
+   * @param isFav  Boolean/お気に入りか否か
+   */
   const toggleFav = async ( id, isFav ) => {
     store.commit('setFavList', { id: id, isFav: isFav })
 
@@ -199,7 +213,11 @@
     }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
   }
 
-  // ドキュメントと紐づく画像の削除
+  /**
+   * ドキュメントの削除
+   * 
+   * @param id  ドキュメントid 
+   */
   const deleteDocument = async id => {
     if ( confirm('削除してもよろしいですか?') ) {
       let b = animals.value.find(animal => animal.id === id)
@@ -256,7 +274,12 @@
         })
     })
 
-    // Matchingコンポーネントからparamsが送られてきた場合
+
+    /**
+     * AnimalMatching.vueからparamsが送られてきた場合
+     * ユーザの性格に合った動物をフィルタリング
+     * 
+     */
     if ( route.params.chara ) {
 
       let q = animalCollectionRef
@@ -289,6 +312,11 @@
 
   /**
    * animalListItemとAnimalListDetailの切り替え
+   * 
+   * @param id  ドキュメントid/null
+   * 
+   * ドキュメントidの時, そのドキュメントを詳細表示
+   * nullの時は, 詳細表示からリスト表示に切り替え 
    */
 
   let detailIndex = ref(0)
@@ -307,7 +335,9 @@
 
 
   /**
-   * Filterによる絞り込み
+   * フィルターコンポーネントからフィルター条件を基にフィルタリング
+   * 
+   * @param filters  フィルターコンポーネントの条件
    */
 
   // フィルターコンポーネントを表示/非表示
@@ -315,7 +345,6 @@
   // お気に入りのみの絞り込みを適用/非適用 
   let isFavFilter = ref(false)
 
-  // フィルターコンポーネントからフィルター条件を基にフィルタリング
   const getFilteredAnimal = async filters => {
     let q = animalCollectionRef
 

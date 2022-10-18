@@ -137,6 +137,9 @@
 
   /**
    *  Editする場合, 既存のデータを反映
+   *  送られてきたドキュメントを編集
+   * 
+   * route.params.id  AnimalListで選択されたドキュメントid
    */
 
   onMounted( () => {
@@ -170,6 +173,7 @@
   /**
    * FireStoreに情報を登録
    */
+  
   const addAnimal = async () => {
     // Editの場合と, 新規登録の場合とで分岐
 

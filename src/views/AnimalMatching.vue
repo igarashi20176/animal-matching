@@ -116,7 +116,21 @@ import { remove } from "@vue/shared";
 
 
 	/**
-	 * 問題を進める & 問題を全て解き終わったらchart-list-itemを非表示
+	 * スコアを加算
+	 * 
+	 * @param choice  MatchingListItemで選択した回答
+	 */
+		let score = 0
+
+	const countScore = choice => {
+		choice = choice + "_score"
+		score += questions[chartNum.value][choice]
+		countNum()
+}
+
+
+	/**
+	 * 問題を進める & 問題を全て解き終わったら診断結果を表示
 	 */
 	let isEnd = ref(false)
 
@@ -134,17 +148,6 @@ import { remove } from "@vue/shared";
 		}
 	}
 
-
-	/**
-	 * スコアを加算
-	 */
-	let score = 0
-
-	const countScore = choice => {
-		choice = choice + "_score"
-		score += questions[chartNum.value][choice]
-		countNum()
-	}
 
 	// 結果を生成
 	let res = ""
