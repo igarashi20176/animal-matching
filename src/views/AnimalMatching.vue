@@ -45,6 +45,7 @@
 	
 	import { updateDoc, doc } from "firebase/firestore"
   import { db } from "../firebase"
+import { remove } from "@vue/shared";
 
 	/**
 	 * firestore ref
@@ -110,9 +111,7 @@
 			isEnd.value = true
 		}
 
-		if ( store.state.isLogin ) {
-			userDocRef = doc(db, 'users', store.state.user.uid )
-		}
+		userDocRef = doc(db, 'users', store.state.user.uid )
 	})
 
 
@@ -165,11 +164,11 @@
 			res = '一人が好き'
 		}
 		
-		store.commit('setChara', res)
-
 		await updateDoc( userDocRef , {
-      chara: store.state.user.chara
-    }).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
+      chara: res
+    }).then( () => {
+			store.commit('setChara', store.state.user.chara)
+		}).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
   
 	}
 
@@ -180,8 +179,10 @@
 		chartNum.value = 0
 
 		await updateDoc( userDocRef , {
-			chara: store.state.user.chara
-		}).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
+			chara: res
+		}).then( () => {
+			store.commit('resetChara')
+		}).catch( () => alert("。再度お試しください") )
   
 	}
 </script>
