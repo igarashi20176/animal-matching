@@ -1,22 +1,25 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Chart from '../views/ChartList.vue'
+import Matching from '../views/AnimalMatching.vue'
 import AnimalList from "../views/AnimalList.vue";
 import Add from "../views/AnimalListAdd.vue";
 import Store from "../store";
 
 const routes = [
     {
-        path: '/chart',
-        name: 'chart',
-        component: Chart,
+        path: '/matching',
+        name: 'matching',
+        component: Matching,
+        meta: {
+            requiresAuth: true
+        }
     },
     {
-        path: '/list',
+        path: '/list:chara?',
         name: 'list',
         component: AnimalList
     },
     {
-        path: '/add',
+        path: '/add:id?',
         name: 'add',
         component: Add,
         meta: {
@@ -33,11 +36,6 @@ const routes = [
         name: "sign-in",
         component: () => import("../views/SignIn.vue")
     },
-    // {
-    //     path: '/edit/:id',
-    //     name: 'edit',
-    //     component: Edit
-    // },
     {
         path: '/*',
         redirect: '/list'
@@ -53,7 +51,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     if ( to.matched.some(record => record.meta.requiresAuth) ) {
         if( !Store.state.isLogin ) {
-            next({ name: "sign-in", params: { errMsg: "追加はログインが必要になります" } })
+            next({ name: "sign-in", params: { errMsg: "この機能はログインが必要になります" } })
         } else {
             next()
         }

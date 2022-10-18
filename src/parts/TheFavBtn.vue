@@ -12,6 +12,6 @@
 <script setup>
 
   defineProps({
-    isFav: { type: Boolean, required: true }
+    isFav: { type: [Boolean, null], required: true }
   })
 </script>

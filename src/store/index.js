@@ -5,6 +5,7 @@ const state = {
   isLogin: false,
   user: {
     uid: "",
+    name: "",
     chara:"",
     favList: ""
   }
@@ -13,19 +14,17 @@ const state = {
 const mutations = {
   auth( state, user ) {
     state.isLogin = true
-<<<<<<< HEAD
-    state.user.uid = user.id
-=======
-    state.user.uid = user.uid
->>>>>>> addFirebase
+    state.user.uid = user.uid,
+    state.user.name = user.name
     state.user.chara = user.chara
     state.user.favList = user.favList
   },
   signOut( state ) {
     state.isLogin = false
     state.user = {}
-<<<<<<< HEAD
-=======
+    state.user.uid = ""
+    state.user.chara = ""
+    state.user.favList = ""
   },
   setFavList( state, payload ) {
     if ( payload.isFav ) {
@@ -33,23 +32,16 @@ const mutations = {
     } else {
       state.user.favList.push(payload.id)
     }  
->>>>>>> addFirebase
+  },
+  setChara( state, chara ) {
+    state.user.chara = chara
+  },
+  resetChara( state ) {
+    state.user.chara = ""
   }
 }
 
 const actions = {
-  auth ( context, user ) {
-    context.commit('auth', user)
-  },
-  signOut( context ) {
-    context.commit('signOut') 
-<<<<<<< HEAD
-=======
-  },
-  setFavList( context, payload ) {
-    context.commit('setFavList', payload)
->>>>>>> addFirebase
-  }
 }
 
 export default createStore({
