@@ -9,12 +9,12 @@
       <!-- 選択されたデータの編集を行う -->
       <button @click.stop="router.push({ name: 'add', params: { id: props.animal.id } })"
         class="block w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
-        <img :src="appImages.editIcon" alt="">
+        <img :src="props.appImages.editIcon" alt="">
       </button>
       <!-- 選択されたデータの削除を行う -->
       <button @click.stop="emits('delete-doc', props.animal.id)"
         class="w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
-        <img :src="appImages.deleteIcon" alt="">
+        <img :src="props.appImages.deleteIcon" alt="">
       </button>
     </div>
 
@@ -40,10 +40,10 @@
     </figure>
     <img 
       class="absolute top-0 left-0 w-[70px] h-[70px]"
-      :src="appImages.dogIcon" alt="dog" v-if="props.animal.species === 'dog'">
+      :src="props.appImages.dogIcon" alt="dog" v-if="props.animal.species === 'dog'">
     <img
       class="absolute top-0 left-0 w-[70px] h-[70px]"
-      :src="appImages.catIcon" alt="dog" v-if="props.animal.species === 'cat'">
+      :src="props.appImages.catIcon" alt="dog" v-if="props.animal.species === 'cat'">
     
   </a>
 
@@ -59,15 +59,18 @@
   const props = defineProps({
     animal: Object,
     isFav: [ Boolean, null ],
+    appImages: Object,
     isFavFilter: { type: Boolean, default: false },
     isEditor: { type: Boolean, default: false }
   })
 
+  const emits = defineEmits([ 'change-detail', 'toggle-fav', 'delete-doc' ])
+
   const router = useRouter()
 
-  
+
+  // お気に入りのみの絞り込みであるとき, 表示/非表示を判定
   const isFilter = computed( () => {
-    // お気に入りのみの絞り込みであるとき, 表示/非表示を判定
     if ( props.isFavFilter ) {
       return props.isFav
     } else {
@@ -76,34 +79,5 @@
     }
   })
 
-  const emits = defineEmits([ 'change-detail', 'toggle-fav', 'delete-doc' ])
 
-
-  /**
-   * アプリに必要な画像をダウンロード
-   */
-  const appImages = ref({
-      catIcon: "app-images/cat_silhouette.png",
-      dogIcon: "app-images/dog_silhouette.png",
-      deleteIcon: "app-images/delete-icon.png",
-      editIcon: "app-images/edit-icon.png",
-  })
-
-  onBeforeMount( () => {
-    Object.keys(appImages.value).forEach( icon => {
-      getDownloadURL(fsRef(getStorage(), appImages.value[icon]))
-        .then((url) => {const xhr = new XMLHttpRequest()
-          xhr.responseType = 'blob'
-          xhr.onload = (event) => {
-            const blob = xhr.response
-          }
-          xhr.open('GET', url)
-          xhr.send();
-
-          appImages.value[icon] = url
-        }).catch((error) => {
-          alert('画像の取得に失敗しました')
-        })
-    })
-  })
 </script>

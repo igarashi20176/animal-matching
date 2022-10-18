@@ -39,7 +39,7 @@
     <ul v-for="animal in animals">
       <li :key="animal.id" class="m-6">
         <animal-list-item :animal="animal"
-          :is-editor="isEditor(animal.id)" :is-fav="isFav(animal.id)" :is-fav-filter="isFavFilter"  
+          :is-editor="isEditor(animal.id)" :app-images="appImages" :is-fav="isFav(animal.id)" :is-fav-filter="isFavFilter"  
           @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" @delete-doc="deleteDocument" />
       </li>
     </ul>
@@ -229,7 +229,32 @@
   // データの取得数が0だった場合, 告知  
   let emptyMsg = ref("")
 
+  // アプリに必要な画像をダウンロード
+  const appImages = ref({
+      catIcon: "app-images/cat_silhouette.png",
+      dogIcon: "app-images/dog_silhouette.png",
+      deleteIcon: "app-images/delete-icon.png",
+      editIcon: "app-images/edit-icon.png",
+  })
+
   onMounted( async () => {   
+
+    // アプリに必要な画像をダウンロード
+    Object.keys(appImages.value).forEach( icon => {
+      getDownloadURL(fsRef(getStorage(), appImages.value[icon]))
+        .then((url) => {const xhr = new XMLHttpRequest()
+          xhr.responseType = 'blob'
+          xhr.onload = (event) => {
+            const blob = xhr.response
+          }
+          xhr.open('GET', url)
+          xhr.send();
+
+          appImages.value[icon] = url
+        }).catch((error) => {
+          alert('画像の取得に失敗しました')
+        })
+    })
 
     // Matchingコンポーネントからparamsが送られてきた場合
     if ( route.params.chara ) {
