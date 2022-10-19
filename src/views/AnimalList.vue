@@ -40,14 +40,14 @@
       <li :key="animal.id" class="m-6">
         <animal-list-item :animal="animal"
           :is-editor="isEditor(animal.id)" :app-images="appImages" :is-fav="isFav(animal.id)" :is-fav-filter="isFavFilter"  
-          @change-detail="changeAnimalDetail" @toggle-fav="toggleFav" @delete-doc="deleteDocument" />
+          @change-view="changeView" @toggle-fav="toggleFav" @delete-doc="deleteDocument" />
       </li>
     </ul>
 
   </div>
 
   <!-- データの詳細を表示 -->
-  <animal-list-detail v-else :animal="currentList" @change-list="changeAnimalDetail" />
+  <animal-list-detail v-else :animal="currentList" @change-view="changeView" />
 </template>
 
 <script setup>
@@ -199,6 +199,7 @@
     }
   }
 
+
   /**
    * お気に入りの着け外し
    * 
@@ -324,7 +325,7 @@
   // 表示するAnimalListDetailを返す
   const currentList = computed( () => animals.value[detailIndex.value] )
 
-  const changeAnimalDetail = id => {
+  const changeView = id => {
     isDetail.value = !isDetail.value
 
     // listItemからDetailへ切り替える / DetailからlistItemへの切り替えはid値を伴わない

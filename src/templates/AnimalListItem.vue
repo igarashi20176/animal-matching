@@ -2,7 +2,7 @@
 
   <a v-if="isFilter"
     class="block cursor-pointer shadow-under hover:shadow-natural relative p-2 border-2 rounded-3xl border-gray-400 bg-lime-50 transition hover:translate-y-[1px]"
-    @click.stop="emits('change-detail', props.animal.id)">
+    @click.stop="emits('change-view', props.animal.id)">
 
     <!-- Edit・Deleteボタン -->
     <div class="absolute right-[3%] flex" v-if="props.isEditor">
@@ -63,7 +63,7 @@
     isEditor: { type: Boolean, default: false }
   })
 
-  const emits = defineEmits([ 'change-detail', 'toggle-fav', 'delete-doc' ])
+  const emits = defineEmits([ 'change-view', 'toggle-fav', 'delete-doc' ])
 
   const router = useRouter()
 

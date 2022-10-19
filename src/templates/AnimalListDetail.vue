@@ -2,7 +2,7 @@
   <div class="relative p-3 bg-lime-50 rounded-2xl border-2 shadow-[6px_4px_5px_0px_rgba(0,0,0,0.3)] border-gray-400">
     <the-normal-btn 
       class="absolute top-3"
-      @click="emits('change-list', null)">
+      @click="emits('change-view', null)">
       戻る
     </the-normal-btn>
     <figure class="flex gap-x-11 pt-12">
@@ -35,5 +35,5 @@
     animal: Object
   })
 
-  const emits = defineEmits([ 'change-list' ])
+  const emits = defineEmits([ 'change-view' ])
 </script>
