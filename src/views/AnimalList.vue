@@ -204,7 +204,7 @@
    * お気に入りの着け外し
    * 
    * @param id  ドキュメントID
-   * @param isFav  Boolean/お気に入りか否か
+   * @param isFav  Boolean/お気に入りに登録されているか否か
    */
   const toggleFav = async ( id, isFav ) => {
     store.commit('setFavList', { id: id, isFav: isFav })
