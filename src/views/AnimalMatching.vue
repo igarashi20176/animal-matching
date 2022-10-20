@@ -5,13 +5,13 @@
 		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
 		<p class="text-center mb-8 border-b-2 border-gray-400" v-else>診断結果</p>
 
-		<matching-list-item :chart="sendChart" @send-answer="countScore" v-if="!isEnd" />
+		<matching-list-item :chart="sendQuestion" @send-answer="countScore" v-if="!isEnd" />
 
 		<div class="relative bg-gray-200 p-5 rounded-2xl" v-if="isEnd">
 			
 			<div class="mb-10">
 				<p class="text-xl mb-6">あなたの性格診断の結果は...</p>
-				<p class="font-bold text-center text-3xl text-red-400 underline">{{ store.state.user.chara }}</p>
+				<p class="font-bold text-center text-3xl text-red-400 underline">{{ getChara }}</p>
 			</div>  
 			<div class="">
 				<p class="text-lg mb-5">ペットにもたくさんの性格を持った子たちがいます</p>
@@ -45,12 +45,12 @@
 	
 	import { updateDoc, doc } from "firebase/firestore"
   import { db } from "../firebase"
-import { remove } from "@vue/shared";
 
 	/**
 	 * firestore ref
 	 */
 	let userDocRef = null
+
 
 	const store = useStore()
 	const router = useRouter()
@@ -101,12 +101,16 @@ import { remove } from "@vue/shared";
 		}
 	]
 
+
+	const getChara = computed( () => { return store.state.user.chara } )
+
 	
 	/**
 	 * 性格診断済の場合は, 診断をスキップ
 	 */
 
 	onMounted( () => {
+		
 		if ( store.state.isLogin && store.state.user.chara ) {
 			isEnd.value = true
 		}
@@ -116,76 +120,74 @@ import { remove } from "@vue/shared";
 
 
 	/**
-	 * スコアを加算
-	 * 
-	 * @param choice  MatchingListItemで選択した回答
-	 */
-		let score = 0
-
-	const countScore = choice => {
-		choice = choice + "_score"
-		score += questions[chartNum.value][choice]
-		countNum()
-}
-
-
-	/**
 	 * 問題を進める & 問題を全て解き終わったら診断結果を表示
 	 */
-	let isEnd = ref(false)
+	 let isEnd = ref(false)
+	let chartNum = ref(0)
 
 	// chartNum番目の問題を返す
-	const sendChart = computed( () => questions[chartNum.value] )
-
-	let chartNum = ref(0)
+	const sendQuestion = computed( () => questions[chartNum.value] )
 
 	const countNum = () => {
 		if ( chartNum.value < questions.length - 1 ) {
 			++chartNum.value
 		} else {
-			isEnd.value = !isEnd.value
+			// 結果を生成
 			generateResult()
 		}
 	}
 
+	/**
+	 * スコアを加算
+	 * 
+	 * @param choice  MatchingListItemで選択した回答
+	 */
+		
+	let score = 0
+
+	const countScore = choice => {
+		choice = choice + "_score"
+		score += questions[chartNum.value][choice]
+		countNum()
+	}
+
 
 	// 結果を生成
-	let res = ""
+	let res = ref("")
 	const generateResult = async () => {
 
 		if ( score > 32 ) {
-			res = "好奇心旺盛"
+			res.value = "好奇心旺盛"
 		} else if ( score > 25 ) {
-			res = '甘えん坊'
+			res.value = '甘えん坊'
 		} else if ( score > 20 ) {
-			res = '活発'
+			res.value = '活発'
 		} else if ( score > 15 ) {
-			res = '温厚'
+			res.value = '温厚'
 		} else if ( score > 10 ) {
-			res = '慎重'
+			res.value = '慎重'
 		} else {
-			res = '一人が好き'
+			res.value = '一人が好き'
 		}
 		
 		await updateDoc( userDocRef , {
-      chara: res
+      chara: res.value
     }).then( () => {
-			store.commit('setChara', store.state.user.chara)
+			store.commit('setChara', res.value)
+			isEnd.value = true
 		}).catch( () => alert("お気に入りが登録出来ませんでした。再度お試しください") )
   
 	}
 
-		// 登録されているユーザの性格情報をリセット
+	// 登録されているユーザの性格情報をリセット
 	const resetChara = async () => {
-		store.commit('resetChara')
-		isEnd.value = false
-		chartNum.value = 0
-
 		await updateDoc( userDocRef , {
-			chara: res
+			chara: ""
 		}).then( () => {
 			store.commit('resetChara')
-		}).catch( () => alert("。再度お試しください") )
+			chartNum.value = 0
+			isEnd.value = false
+		}).catch( () => alert("リセットに失敗しました。再度お試しください") )
   
 	}
 </script>

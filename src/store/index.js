@@ -21,8 +21,8 @@ const mutations = {
   },
   signOut( state ) {
     state.isLogin = false
-    state.user = {}
     state.user.uid = ""
+    state.user.name = ""
     state.user.chara = ""
     state.user.favList = ""
   },

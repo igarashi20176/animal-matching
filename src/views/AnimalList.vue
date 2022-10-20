@@ -48,6 +48,7 @@
 
   <!-- データの詳細を表示 -->
   <animal-list-detail v-else :animal="currentList" @change-view="changeView" />
+
 </template>
 
 <script setup>
@@ -111,6 +112,7 @@
    * @param id  ドキュメントID　
    * @return Boolean
    */
+  
   const isEditor = computed( () => {
     return id => {
       if ( store.state.isLogin ) {
@@ -186,7 +188,7 @@
           .then((url) => {const xhr = new XMLHttpRequest()
             xhr.responseType = 'blob'
             xhr.onload = (event) => {
-              const blob = xhr.response
+              // const blob = xhr.response
             }
             xhr.open('GET', url)
             xhr.send();

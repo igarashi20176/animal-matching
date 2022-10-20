@@ -25,9 +25,12 @@
       <figcaption> 
         <p class="my-1 text-3xl font-bold">
           {{ props.animal.name }}
-          <the-fav-btn v-if="props.isFav !== null" 
+        
+          <!-- ログインしているかつ編集者で無ければお気に入りボタンを表示 -->
+          <the-fav-btn v-if="props.isFav !== null && !isEditor" 
             @click.stop="emits('toggle-fav', props.animal.id, props.isFav)" 
             :is-fav="props.isFav" />
+
         </p>
         <p class="my-3 text-2xl font-bold">
           <span class="text-blue-500"

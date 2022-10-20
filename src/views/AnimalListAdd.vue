@@ -137,7 +137,7 @@
 
   /**
    *  Editする場合, 既存のデータを反映
-   *  送られてきたドキュメントを編集
+   *  選択されたドキュメントを編集
    * 
    * route.params.id  AnimalListで選択されたドキュメントid
    */
@@ -145,7 +145,7 @@
   onMounted( () => {
     if ( route.params.id ) {
       getDoc(doc(db, 'animals', route.params.id))
-        .then(data => {
+        .then( data => {
           newAnimalInfo.value = {
             name: data.data().name,
             species: data.data().species,
@@ -159,8 +159,10 @@
           
           imageFileInfo.value = {
             imgName: "画像を変える場合は, 再選択してください",
-            imgUrl_copy: data.data().imgURL,
+            imgURL_copy: data.data().imgURL,
           }
+
+          console.log(imageFileInfo.value);
 
         }).catch(() => {
           alert('データの取得に失敗しました')
@@ -177,7 +179,7 @@
   const addAnimal = async () => {
     // Editの場合と, 新規登録の場合とで分岐
 
-    // 新規登録の場合
+    // 新規登録の場合, 動物の情報と画像を登録
     if ( !newAnimalInfo.value.editor ) {
 
       const addDocAwait = 
@@ -206,7 +208,8 @@
           alert("アイテムの送信に失敗しました。再度やり直してください")
         })
 
-    // Editの場合
+    // Editの場合, 動物の情報をアップデート
+    // 画像を変更した場合元の画像を削除&新しい画像をアップロード
     } else {
 
       let promiseAry = []
@@ -215,7 +218,7 @@
         await updateDoc(doc(db, 'animals', route.params.id), {
           name: newAnimalInfo.value.name,
           species: newAnimalInfo.value.species,
-          age: Number(newAnimalInfo.value.age),
+          age: parseInt(newAnimalInfo.value.age),
           gender: newAnimalInfo.value.gender,
           place: newAnimalInfo.value.place,
           chara: newAnimalInfo.value.chara,
@@ -227,7 +230,7 @@
       if ( imageFileInfo.value.imgURL !== imageFileInfo.value.imgURL_copy ) {
 
         const deleteImageAwait = 
-          await deleteObject(fsRef(storage, b.imgURL))
+          await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_copy))
 
         const updateDocAwait =  
           await updateDoc(doc(db, 'animals', route.params.id), {
@@ -242,8 +245,6 @@
           promiseAry = [ deleteImageAwait, updateDocAwait, uploadImageAwait ]
       }
 
-      console.log(promiseAry);
-
       Promise.all( [ updateDocAwait, ...promiseAry ] )
         .then( () => {
           router.push('/list')
@@ -255,7 +256,7 @@
 
 
   /**
-   * 選択された画像をの保存
+   * 選択された画像の情報を保存
    */
 
   let imageFileInfo = ref({
