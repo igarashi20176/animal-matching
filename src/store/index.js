@@ -28,8 +28,10 @@ const mutations = {
   },
   setFavList( state, payload ) {
     if ( payload.isFav ) {
+      // trueの時, お気に入りリストから外す
       state.user.favList = state.user.favList.filter( doc =>  doc !== payload.id )
     } else {
+      // falseのとき, お気に入りリストに登録
       state.user.favList.push(payload.id)
     }  
   },
