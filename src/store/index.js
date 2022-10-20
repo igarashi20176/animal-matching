@@ -1,5 +1,4 @@
 import { createStore } from 'vuex'
-import createPersistedState from "vuex-persistedstate";
 
 const state = {
   isLogin: false,
@@ -50,8 +49,4 @@ export default createStore({
   state,
   mutations,
   actions,
-  plugins: [createPersistedState({
-      key: 'animal-matching',
-      storage: localStorage
-  })]
 })
