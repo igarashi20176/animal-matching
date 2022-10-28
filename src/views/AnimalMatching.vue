@@ -1,24 +1,24 @@
 <template>
 
-	<div class="w-3/4  min-w-[600px] m-auto p-2">
-		<h2 class="font-bold text-3xl text-center mb-3">性格診断</h2>
-		<p class="text-center mb-12 border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
-		<p class="text-center mb-8 border-b-2 border-gray-400" v-else>診断結果</p>
+	<div class="sm:w-[80%] m-auto p-2">
+		<h2 class="mb-3 font-bold text-3xl text-center">性格診断</h2>
+		<p class="mb-12 text-center border-b-2 border-gray-400" v-if="!isEnd">※全て回答してね</p>
+		<p class="mb-8 text-center border-b-2 border-gray-400" v-else>診断結果</p>
 
 		<matching-list-item :chart="sendQuestion" @send-answer="countScore" v-if="!isEnd" />
 
 		<div class="relative bg-gray-200 p-5 rounded-2xl" v-if="isEnd">
 			
 			<div class="mb-10">
-				<p class="text-xl mb-6">あなたの性格診断の結果は...</p>
+				<p class="mb-6 text-xl">あなたの性格診断の結果は...</p>
 				<p class="font-bold text-center text-3xl text-red-400 underline">{{ getChara }}</p>
 			</div>  
 			<div class="">
-				<p class="text-lg mb-5">ペットにもたくさんの性格を持った子たちがいます</p>
+				<p class="mb-5 text-lg">ペットにもたくさんの性格を持った子たちがいます</p>
 				<p class="text-lg">あなたに合うペットとマッチングしましょう!</p>
 			</div>
 
-			<div class="text-center">
+			<div class="sm:text-center">
 				<the-normal-btn 
 					class="mt-5"
 					@click="router.push( { name: 'list', params: { chara: store.state.user.chara } } )">

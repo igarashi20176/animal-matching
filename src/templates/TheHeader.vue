@@ -1,7 +1,7 @@
 <template>
-  <header class="relative w-full flex justify-center items-center bg-[rgb(255,255,255)] p-4 shadow-md">
-    <h2 class="font-bold text-xl">あにまるまっちんぐ</h2>
-    <div class="absolute right-3">
+  <header class="flex items-center p-4 w-full bg-[rgb(255,255,255)] shadow-md">
+    <h2 class="grow md:pl-[45%] font-bold text-xl">あにまるまっちんぐ</h2>
+    <div class="flex-none text-right">
 
       <router-link class="mr-1" :to="{ name: 'sign-in' }" v-if="!isLogin">
         <TheNormalBtn>

@@ -3,7 +3,7 @@
 
   <the-routing-btn-col3 :btn-a="routingBtns[0]" :btn-b="routingBtns[1]" :btn-c="routingBtns[2]" />
 
-  <div class="relative scroll-none h-[450px] w-[800px] m-auto p-2 bg-[#fff] overflow-auto border-2 border-gray-400 rounded-2xl">
+  <div class="relative m-auto p-2 lg:w-3/5 h-[450px] bg-[#fff] border-2 border-gray-400 rounded-2xl scroll-none overflow-auto">
     <router-view />
   </div>
 

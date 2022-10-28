@@ -2,7 +2,7 @@
 
   <h2 class="font-bold text-center text-3xl py-3 mb-10 border-b-2 border-gray-400">登録フォーム</h2>
 
-  <div class="w-4/5 text-center m-auto border-2 border-gray-400 bg-rose-100 py-3 rounded-xl">
+  <div class="md:w-4/5 text-center m-auto border-2 border-gray-400 bg-rose-100 py-3 rounded-xl">
 
     <div class="mb-6 p-2">
       <input 
@@ -129,7 +129,7 @@
     age: "",
     gender: "",
     place: "",
-    chara: ["活発", "好奇心旺盛", "甘えん坊"],
+    chara: "",
     remarks: "",
     editor: ""
   })
@@ -152,7 +152,7 @@
             age: data.data().age,
             gender: data.data().gender,
             place: data.data().place,
-            chara: ["活発", "好奇心旺盛", "甘えん坊"],
+            chara: data.data().chara,
             remarks: data.data().remarks,
             editor: data.data().editor
           }
@@ -189,7 +189,7 @@
           age: Number(newAnimalInfo.value.age),
           gender: newAnimalInfo.value.gender,
           place: newAnimalInfo.value.place,
-          chara: newAnimalInfo.value.chara,
+          chara: newAnimalInfo.value.chara.split(','),
           remarks: newAnimalInfo.value.remarks,
           isPresent: true,
           imgURL: imageFileInfo.value.imgURL,
@@ -221,7 +221,7 @@
           age: parseInt(newAnimalInfo.value.age),
           gender: newAnimalInfo.value.gender,
           place: newAnimalInfo.value.place,
-          chara: newAnimalInfo.value.chara,
+          chara: newAnimalInfo.value.chara.split(','),
           remarks: newAnimalInfo.value.remarks,
           isPresent: true
         })
@@ -231,16 +231,17 @@
 
         const deleteImageAwait = 
           await deleteObject(fsRef(storage, imageFileInfo.value.imgURL_copy))
+            .catch(err => console.log(err))
 
         const updateDocAwait =  
           await updateDoc(doc(db, 'animals', route.params.id), {
             imgURL: imageFileInfo.value.imgURL
-          })
+          }).catch(err => console.log(err))
 
         const uploadImageAwait = 
           await uploadBytes(imageFileInfo.value.storageRef, imageFileInfo.value.file).then((snapshot) => {
             console.log("画像をアップロード", snapshot)
-          })
+          }).catch(err => console.log(err))
 
           promiseAry = [ deleteImageAwait, updateDocAwait, uploadImageAwait ]
       }

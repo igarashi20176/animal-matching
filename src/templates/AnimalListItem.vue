@@ -1,28 +1,28 @@
 <template>
 
   <a v-if="isFilter"
-    class="block cursor-pointer shadow-under hover:shadow-natural relative p-2 border-2 rounded-3xl border-gray-400 bg-lime-50 transition hover:translate-y-[1px]"
+    class="relative block cursor-pointer p-2 bg-lime-50 border-2 rounded-3xl border-gray-400 transition shadow-under hover:shadow-natural hover:translate-y-[1px]"
     @click.stop="emits('change-view', props.animal.id)">
 
     <!-- Edit・Deleteボタン -->
     <div class="absolute right-[3%] flex" v-if="props.isEditor">
       <!-- 選択されたデータの編集を行う -->
       <button @click.stop="router.push({ name: 'add', params: { id: props.animal.id } })"
-        class="block w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
+        class="block mr-2 pb-1 w-[40px] h-auto hover:border-b-2 hover:border-gray-500 transition">
         <img :src="props.appImages.editIcon" alt="">
       </button>
       <!-- 選択されたデータの削除を行う -->
       <button @click.stop="emits('delete-doc', props.animal.id)"
-        class="w-[40px] mr-2 pb-1 h-auto hover:border-b-2 hover:border-gray-500 transition">
+        class="mr-2 pb-1 w-[40px] h-auto hover:border-b-2 hover:border-gray-500 transition">
         <img :src="props.appImages.deleteIcon" alt="">
       </button>
     </div>
 
-    <figure class="flex gap-x-10">
+    <figure class="flex">
       <img 
-        class="w-[120px] h-[150px] ml-32 border-2 border-gray-400 rounded-md"
+        class="sm:ml-28 w-[130px] h-[150px] border-2 border-gray-400 rounded-md"
         :src="`${props.animal.imgURL}`" :alt="props.animal.name">
-      <figcaption> 
+      <figcaption class="ml-3 sm:ml-8 "> 
         <p class="my-1 text-3xl font-bold">
           {{ props.animal.name }}
         
@@ -42,10 +42,10 @@
       </figcaption>     
     </figure>
     <img 
-      class="absolute top-0 left-0 w-[70px] h-[70px]"
+      class="invisible sm:visible absolute top-0 w-[70px] h-[70px]"
       :src="props.appImages.dogIcon" alt="dog" v-if="props.animal.species === 'dog'">
     <img
-      class="absolute top-0 left-0 w-[70px] h-[70px]"
+      class="invisible sm:visible absolute top-0 w-[70px] h-[70px]"
       :src="props.appImages.catIcon" alt="dog" v-if="props.animal.species === 'cat'">
     
   </a>

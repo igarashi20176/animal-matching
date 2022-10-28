@@ -6,9 +6,9 @@
 
     <div class="flex justify-between items-center">
       
-      <!-- お気に入りのみ切り替えボタン -->
+      <!-- お気に入り表示切り替えボタン -->
       <div v-if="!emptyMsg && store.state.isLogin"
-        class="bg-yellow-200 p-2 rounded-2xl">
+        class="p-2 bg-yellow-200 rounded-2xl">
         <p>お気に入りのみ表示</p>  
         <the-toggle-btn  v-model:value="isFavFilter"  />
         <!-- <the-toggle-btn  :value="isFavFilter" @update:value="isFavFilter = $event"  /> -->
@@ -26,7 +26,7 @@
         フィルター機能
       </the-normal-btn>
 
-      <div class="absolute z-10 right-[19%] top-[7%]">
+      <div class="absolute z-10 right-[22%] top-[20%]">
         <the-filter-radio-btn v-if="isFilter" 
           :btn-a="filterBtns[0]" :btn-b="filterBtns[1]"
           @get-filtered="getFilteredAnimal" />
