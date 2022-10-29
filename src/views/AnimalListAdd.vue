@@ -152,13 +152,14 @@
             age: data.data().age,
             gender: data.data().gender,
             place: data.data().place,
-            chara: data.data().chara,
+            chara: data.data().chara.join(","),
             remarks: data.data().remarks,
             editor: data.data().editor
           }
           
           imageFileInfo.value = {
             imgName: "画像を変える場合は, 再選択してください",
+            imgURL: data.data().imgURL,
             imgURL_copy: data.data().imgURL,
           }
 
