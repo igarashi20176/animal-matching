@@ -83,7 +83,6 @@
   const store = useStore()
   const route = useRoute()
 
-   
   // 動物のリスト
   let animals = ref([])
   // フィルターのボタン

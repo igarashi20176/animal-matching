@@ -163,7 +163,7 @@
             imgURL_copy: data.data().imgURL,
           }
 
-          console.log(imageFileInfo.value);
+          console.log(newAnimalInfo.value.chara);
 
         }).catch(() => {
           alert('データの取得に失敗しました')
