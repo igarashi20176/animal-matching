@@ -1,5 +1,8 @@
 # アニマルマッチング アプリ
-This is My first vue.js creation /  2022/09/25 ~ 2022/10/18 
+This is My first vue.js creation /  2022/09/25 ~ 2022/10/18  
+  
+作品のURL  
+https://animal-matching-1fb37.firebaseapp.com/
 
 ## ◆作品の概要
 このアプリは, 譲渡に出されているペットたち(犬・猫)を閲覧できる機能とともに, 飼い主の性格とマッチした動物を提案するマッチング機能を実装しました。
